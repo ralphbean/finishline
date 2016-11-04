@@ -1,0 +1,5 @@
+bs4
+docutils
+html5lib
+requests
+jinja2

@@ -1,0 +1,20 @@
+---
+categories: fedora, factory2, sprint
+date: {{current_date}}
+permalink: http://threebean.org/blog/{{title | slugify}}/
+title: {{title}}
+---
+
+{{summary|rst2html}}
+
+{% for entry_title, entry_text, entry_link in entries %}
+<h2>{{entry_title}}</h2>
+{% if entry_text %}
+{{entry_text|rst2html}}
+{% endif %}
+
+<p><video width="600" height="350" controls="controls" autobuffer="autobuffer">
+  <source src="{{entry_link}}"/>
+</video></p>
+
+{% endfor %}
