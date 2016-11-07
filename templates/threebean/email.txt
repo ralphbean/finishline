@@ -6,4 +6,5 @@
 {{entry_title|replace('-')}}
 {% if entry_text %}{{entry_text}}{% endif %}
 {{entry_link}}
+
 {% endfor %}

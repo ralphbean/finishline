@@ -62,7 +62,7 @@ def prepare(session, args, links):
     for key, items in collated.items():
 
         username, rest = key.split('-', 1)
-        heading = "%s, %s" % (username, rest)
+        heading = "%s, by %s" % (rest, username)
 
         extensions = items.keys()
         try:
