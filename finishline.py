@@ -66,8 +66,8 @@ def prepare(session, args, links):
 
         extensions = items.keys()
         try:
-            rst = extensions.remove('rst')
-            body = get(items[rst])
+            extensions.remove('rst')
+            body = get(items['rst'])
         except ValueError:
             body = None
 
