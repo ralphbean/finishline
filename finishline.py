@@ -76,6 +76,8 @@ def prepare(session, args, links):
 
         entries.append((heading, body, args.url + '/' + link,))
 
+    entries.sort()
+
     return dict(summary=summary, entries=entries)
 
 
