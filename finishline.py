@@ -18,7 +18,7 @@ import jinja2
 
 custom_filters = {
     'slugify': lambda x: x.lower().replace(' ', '-'),
-    'rst2html': lambda rst: docutils.examples.html_parts(rst)['body'],
+    'rst2html': lambda rst: docutils.examples.html_parts(rst, input_encoding='utf-8')['body'],
     'replace': lambda string, char: char * len(string),
 }
 
@@ -50,8 +50,8 @@ def prepare(session, args, links):
     try:
         links.remove('readme.rst')
         summary = get('readme.rst')
-    except KeyError:
-        summary = None
+    except ValueError:
+        summary = ''
 
     collated = collections.defaultdict(dict)
     for link in links:
