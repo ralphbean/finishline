@@ -114,4 +114,4 @@ if __name__ == '__main__':
     data = prepare(session, args, links)
 
     output = render(args, data)
-    print output
+    print output.encode('utf-8')
