@@ -60,8 +60,11 @@ def prepare(session, args, links):
 
     entries = []
     for key, items in collated.items():
+        try:
+            username, rest = key.split('-', 1)
+        except ValueError:
+            username, rest = key.split('_', 1)
 
-        username, rest = key.split('-', 1)
         heading = "%s, by %s" % (rest, username)
 
         extensions = items.keys()
