@@ -3,3 +3,5 @@ docutils
 html5lib
 requests
 jinja2
+jira
+requests_kerberos

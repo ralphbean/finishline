@@ -1,0 +1,16 @@
+install:
+	test -d ~/node_modules/md2gslides/bin/ || npm install md2gslides
+	test -d venv || virtualenv venv
+	venv/bin/pip install -Ur requirements.txt
+
+build: install
+	venv/bin/python finishline.py \
+		--insecure \
+		--server https://projects.engineering.redhat.com \
+		--project FACTORY \
+		--title "Factory 2.0, Sprint Review" \
+		--subtitle "Sprint #39" \
+		--template threebean/slides.md > foo.md
+
+upload: build
+	~/node_modules/md2gslides/bin/md2gslides.js foo.md -e -a 1Riz9-XeqElrXlnu_vB5JS0nV-FoDv_oTmTAcl3emyuw
