@@ -111,12 +111,18 @@ def extract_mvp_status(args, epic):
     return epic.raw['fields'][args.mvp_status_field]
 
 
+def extract_percent_complete(args, epic):
+    import random
+    return random.randint(1, 100)
+
+
 def get_epic_details(client, args, key):
     if not key:
         return None
     epic = client.issue(key)
 
     #epic.image_url = 'https://placekitten.com/1600/900'
+    epic.percent_complete = extract_percent_complete(args, epic)
     epic.status_update = extract_status_update(args, epic)
     epic.mvp_status = extract_mvp_status(args, epic)
     return epic
