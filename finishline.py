@@ -44,8 +44,10 @@ def parse_arguments():
     parser.add_argument('--title', help='Title of the report.')
     parser.add_argument('--subtitle', help='Subtitle of the report.')
     parser.add_argument('--template', help='Path to a template for output.')
-    parser.add_argument('--epicfield', help='Epic customfield key.',
+    parser.add_argument('--epic-field', help='Epic field key.',
                         default='customfield_10006')
+    parser.add_argument('--mvp-status-field', help='MVP status field key.',
+                        default='customfield_11908')
     args = parser.parse_args()
     if not args.server:
         raise ValueError('--server is required')
@@ -73,6 +75,7 @@ def render(args, data):
 
     return template.render(**data)
 
+
 def pull_issues(client, args):
     tmpl = (
         'project = %s'
@@ -86,16 +89,36 @@ def pull_issues(client, args):
         yield issue
 
 
-def get_epic_details(client, key):
+def extract_status_update(args, epic):
+    sentinnels = [
+        'h1. Status Update:',
+        'Status Update:',
+        'h1. Status Update',
+        'Status Update',
+    ]
+    for comment in epic.fields.comment.comments:
+        for sentinnel in sentinnels:
+            body = comment.body
+            if body.startswith(sentinnel):
+                # Attach a cleaned version for the template.
+                body = body[len(sentinnel):].lstrip()
+                body = body.split('\n\n')[0].strip()
+                comment.cleaned = body
+                return comment
+
+
+def extract_mvp_status(args, epic):
+    return epic.raw['fields'][args.mvp_status_field]
+
+
+def get_epic_details(client, args, key):
     if not key:
         return None
     epic = client.issue(key)
 
-    epic.image_url = 'https://placekitten.com/1600/900'
-
-    epic.status_update = 'foo bar'
-    epic.status_update_date = '2017-01-01'
-
+    #epic.image_url = 'https://placekitten.com/1600/900'
+    epic.status_update = extract_status_update(args, epic)
+    epic.mvp_status = extract_mvp_status(args, epic)
     return epic
 
 
@@ -103,11 +126,11 @@ def collate_issues(client, args, issues):
     epics = {}
     by_epic = collections.defaultdict(set)
     for issue in issues:
-        epic = issue.raw['fields'][args.epicfield]
+        epic = issue.raw['fields'][args.epic_field]
 
         # Enrich with details
         if not epic in epics:
-            epics[epic] = get_epic_details(client, epic)
+            epics[epic] = get_epic_details(client, args, epic)
 
         # Associate the issue with the enriched epic.
         by_epic[epic].add(issue)

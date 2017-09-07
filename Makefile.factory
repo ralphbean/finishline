@@ -3,13 +3,14 @@ install:
 	test -d venv || virtualenv venv
 	venv/bin/pip install -Ur requirements.txt
 
+
 build: install
 	venv/bin/python finishline.py \
 		--insecure \
 		--server https://projects.engineering.redhat.com \
 		--project FACTORY \
-		--title "Factory 2.0, Sprint Review" \
-		--subtitle "Sprint #39" \
+		--title "Factory 2.0, #39" \
+		--subtitle "$(shell date '+%B %d, %Y') — PnT DevOps" \
 		--template threebean/slides.md > foo.md
 
 upload: build
