@@ -48,6 +48,11 @@ def parse_arguments():
                         default='customfield_10006')
     parser.add_argument('--mvp-status-field', help='MVP status field key.',
                         default='customfield_11908')
+    parser.add_argument('--story-point-field', help='Story point field key.',
+                        default='customfield_10002')
+    parser.add_argument('--default-story-points',
+                        help='Default points to assume if an issue has none.',
+                        type=float, default=3)
     args = parser.parse_args()
     if not args.server:
         raise ValueError('--server is required')
@@ -111,9 +116,24 @@ def extract_mvp_status(args, epic):
     return epic.raw['fields'][args.mvp_status_field]
 
 
-def extract_percent_complete(args, epic):
-    import random
-    return random.randint(1, 100)
+def extract_percent_complete(client, args, epic):
+    tmpl = (
+        'project = %s'
+        ' AND "Epic Link" = %s'
+    )
+    query = tmpl % (args.project, epic.key)
+    issues = client.search_issues(query)
+
+    total_points = sum([
+        i.raw['fields'][args.story_point_field] or args.default_story_points
+        for i in issues
+    ])
+    closed_points = sum([
+        i.raw['fields'][args.story_point_field] or args.default_story_points
+        for i in issues
+        if i.raw['fields']['resolution']
+    ])
+    return "%0.1f" % (closed_points / total_points * 100)
 
 
 def get_epic_details(client, args, key):
@@ -122,7 +142,7 @@ def get_epic_details(client, args, key):
     epic = client.issue(key)
 
     #epic.image_url = 'https://placekitten.com/1600/900'
-    epic.percent_complete = extract_percent_complete(args, epic)
+    epic.percent_complete = extract_percent_complete(client, args, epic)
     epic.status_update = extract_status_update(args, epic)
     epic.mvp_status = extract_mvp_status(args, epic)
     return epic
