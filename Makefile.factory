@@ -3,7 +3,6 @@ install:
 	test -d venv || virtualenv venv
 	venv/bin/pip install -Ur requirements.txt
 
-
 build: install
 	venv/bin/python finishline.py \
 		--insecure \
@@ -14,4 +13,6 @@ build: install
 		--template threebean/slides.md > foo.md
 
 upload: build
-	~/node_modules/md2gslides/bin/md2gslides.js foo.md -t "Factory 2.0, Sprint Review #39" -e -a 1ePk4VpgxHIkTCzVH1xte5b5MpWZRmiHKxbkEIwF4JHw
+	~/node_modules/md2gslides/bin/md2gslides.js foo.md \
+		-t "Factory 2.0, Sprint Review #39" # \
+		# -e -a 1ePk4VpgxHIkTCzVH1xte5b5MpWZRmiHKxbkEIwF4JHw
