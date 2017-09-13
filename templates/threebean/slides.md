@@ -5,7 +5,7 @@
 {% endif %}
 
 ---
-{% for objective in objectives | sort(reverse=True) %}# {{ objective }} {.big}
+{% for objective in objectives | sort %}# {{ objective }} {.big}
 ---
 {% for key, epic in epics.items() if epic and key in objectives[objective] %}
 # [{{ epic.raw['fields']['customfield_10007'] }}]({{ server }}/browse/{{ key }})
