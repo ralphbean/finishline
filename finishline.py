@@ -53,6 +53,10 @@ def parse_arguments():
     parser.add_argument('--default-story-points',
                         help='Default points to assume if an issue has none.',
                         type=float, default=3)
+    parser.add_argument('--placeholder-objective',
+                        help="Placeholder text for epics that don't "
+                        "have an objective associated.",
+                        default='Miscellaneous')
     args = parser.parse_args()
     if not args.server:
         raise ValueError('--server is required')
@@ -118,6 +122,13 @@ def extract_status_update(args, epic):
                 return comment
 
 
+def extract_objective(args, epic):
+    for link in epic.raw['fields'].get('issuelinks', []):
+        if link['type']['inward'] == 'is subtask of':
+            return link['inwardIssue']['fields']['summary']
+    return args.placeholder_objective
+
+
 def extract_mvp_status(args, epic):
     return epic.raw['fields'].get(args.mvp_status_field)
 
@@ -154,24 +165,30 @@ def get_epic_details(client, args, key):
     epic.percent_complete = extract_percent_complete(client, args, epic)
     epic.status_update = extract_status_update(args, epic)
     epic.mvp_status = extract_mvp_status(args, epic)
+    epic.objective = extract_objective(args, epic)
+
     return epic
 
 
 def collate_issues(client, args, issues):
     epics = {}
+    objectives = collections.defaultdict(set)
     by_epic = collections.defaultdict(lambda: collections.defaultdict(set))
     for issue in issues:
-        epic = issue.raw['fields'][args.epic_field]
+        epic_key = issue.raw['fields'][args.epic_field]
 
         # Enrich with details
-        if not epic in epics:
-            epics[epic] = get_epic_details(client, args, epic)
+        if not epic_key in epics:
+            epics[epic_key] = get_epic_details(client, args, epic_key)
+
+        objective = getattr(epics[epic_key], 'objective', args.placeholder_objective)
+        objectives[objective].add(epic_key)
 
         # Associate the issue with the enriched epic.
         category = issue.fields.status.raw['statusCategory']['name']
-        by_epic[epic][category].add(issue)
+        by_epic[epic_key][category].add(issue)
 
-    return dict(epics=epics, by_epic=by_epic)
+    return dict(epics=epics, by_epic=by_epic, objectives=objectives)
 
 
 if __name__ == '__main__':

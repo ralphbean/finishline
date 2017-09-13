@@ -5,7 +5,9 @@
 {% endif %}
 
 ---
-{% for key, epic in epics.items() if epic %}
+{% for objective in objectives | sort(reverse=True) %}# {{ objective }} {.big}
+---
+{% for key, epic in epics.items() if epic and key in objectives[objective] %}
 # [{{ epic.raw['fields']['customfield_10007'] }}]({{ server }}/browse/{{ key }})
 
 {{ epic.raw['fields']['summary'].split('\n')[0] }}
@@ -23,6 +25,7 @@
 {% endfor %}
 {% if epic.image_url %}![]({{epic.image_url}}){.background}{% endif %}
 ---
+{% endfor %}
 {% endfor %}
 # Thank you {.big}
 Slides auto-generated from JIRA data with [finishline](https://github.com/ralphbean/finishline).
