@@ -83,10 +83,16 @@ def render(args, data):
 
 def pull_issues(client, args):
     tmpl = (
-        'project = %s'
-        ' AND resolution is not EMPTY'
-        ' AND resolutiondate >= %s'
+        ' project = %s'
+        ' AND ('
+        '   resolution is EMPTY OR '
+        '   ('
+        '       resolution is not EMPTY AND '
+        '       resolutiondate >= %s'
+        '   )'
+        ')'
         ' AND status != Dropped'
+        ' AND statusCategory != "To Do"'
     )
     query = tmpl % (args.project, args.since)
     issues = client.search_issues(query)
@@ -113,7 +119,7 @@ def extract_status_update(args, epic):
 
 
 def extract_mvp_status(args, epic):
-    return epic.raw['fields'][args.mvp_status_field]
+    return epic.raw['fields'].get(args.mvp_status_field)
 
 
 def extract_percent_complete(client, args, epic):
@@ -133,7 +139,10 @@ def extract_percent_complete(client, args, epic):
         for i in issues
         if i.raw['fields']['resolution']
     ])
-    return "%0.1f" % (closed_points / total_points * 100)
+    if total_points:
+        return "%0.1f" % (closed_points / total_points * 100)
+    else:
+        return "undefined"
 
 
 def get_epic_details(client, args, key):
@@ -150,7 +159,7 @@ def get_epic_details(client, args, key):
 
 def collate_issues(client, args, issues):
     epics = {}
-    by_epic = collections.defaultdict(set)
+    by_epic = collections.defaultdict(lambda: collections.defaultdict(set))
     for issue in issues:
         epic = issue.raw['fields'][args.epic_field]
 
@@ -159,7 +168,8 @@ def collate_issues(client, args, issues):
             epics[epic] = get_epic_details(client, args, epic)
 
         # Associate the issue with the enriched epic.
-        by_epic[epic].add(issue)
+        category = issue.fields.status.raw['statusCategory']['name']
+        by_epic[epic][category].add(issue)
 
     return dict(epics=epics, by_epic=by_epic)
 
