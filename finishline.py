@@ -57,6 +57,8 @@ def parse_arguments():
                         help="Placeholder text for epics that don't "
                         "have an objective associated.",
                         default='Miscellaneous')
+    parser.add_argument('--attribution', help='Show attribution for status.',
+                        default=False, action='store_true')
     args = parser.parse_args()
     if not args.server:
         raise ValueError('--server is required')
