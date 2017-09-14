@@ -111,7 +111,7 @@ def extract_status_update(args, epic):
         'h1. Status Update',
         'Status Update',
     ]
-    for comment in epic.fields.comment.comments:
+    for comment in reversed(epic.fields.comment.comments):
         for sentinnel in sentinnels:
             body = comment.body
             if body.startswith(sentinnel):
