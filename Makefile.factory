@@ -8,11 +8,12 @@ build: install
 		--insecure \
 		--server https://projects.engineering.redhat.com \
 		--project FACTORY \
-		--title "Factory 2.0, #39" \
+		--title "Factory 2.0, Review" \
 		--subtitle "$(shell date '+%B %d, %Y') — PnT DevOps" \
-		--template threebean/slides.md > foo.md
+		--template threebean/slides.md > foo.md # \
+		# --attribution
 
 upload: build
 	~/node_modules/md2gslides/bin/md2gslides.js foo.md \
-		-t "Factory 2.0, Sprint Review #39" # \
-		# -e -a 1ePk4VpgxHIkTCzVH1xte5b5MpWZRmiHKxbkEIwF4JHw
+		-t "Factory 2.0, Review" \
+		#-e -a 1TlaHBjOeIdvbZrGBu3oFcFnBHvFB1f2R1Cg5kdK6wr8
