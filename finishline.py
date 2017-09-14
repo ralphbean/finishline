@@ -118,8 +118,8 @@ def extract_status_update(args, epic):
             body = comment.body
             if body.startswith(sentinnel):
                 # Attach a cleaned version for the template.
-                body = body[len(sentinnel):].lstrip()
-                body = body.split('\n\n')[0].strip()
+                body = body[len(sentinnel):].strip()
+                body = body.split('\n')[0].strip()
                 comment.cleaned = body
                 return comment
 
