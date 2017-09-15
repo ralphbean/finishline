@@ -36,8 +36,8 @@ def parse_arguments():
     default_since = (datetime.date.today() - two_weeks).strftime(date_format)
     parser = argparse.ArgumentParser()
     parser.add_argument('--server', help='server to your JIRA instance.')
-    parser.add_argument('--insecure', help='Do not verify SSL certs.',
-                        default=False, action='store_true')
+    parser.add_argument('--cacert', help='CA cert for https validation.',
+                        default='/etc/pki/tls/certs/ca-bundle.crt')
     parser.add_argument('--project', help='JIRA project to report on.')
     parser.add_argument('--since', help='Past date from which to pull data.',
                         default=default_since)
@@ -201,7 +201,7 @@ if __name__ == '__main__':
 
     client = jira.client.JIRA(
         server=args.server,
-        options=dict(verify=not args.insecure),
+        options=dict(verify=args.cacert),
         kerberos=True,
     )
 
