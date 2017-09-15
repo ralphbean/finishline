@@ -5,10 +5,12 @@ See the README for more information.
 Author:  Ralph Bean <rbean@redhat.com>
 
 """
+from __future__ import print_function
 
 import argparse
-import datetime
 import collections
+import datetime
+import sys
 
 import bs4
 import docutils.examples
@@ -88,19 +90,20 @@ def render(args, data):
 
 
 def pull_issues(client, args):
-    tmpl = (
-        ' project = %s'
-        ' AND ('
-        '   resolution is EMPTY OR '
-        '   ('
-        '       resolution is not EMPTY AND '
-        '       resolutiondate >= %s'
-        '   )'
-        ')'
-        ' AND status != Dropped'
-        ' AND statusCategory != "To Do"'
-    )
+    tmpl = '\n'.join([
+        ' project = %s',
+        ' AND (',
+        '   resolution is EMPTY OR ',
+        '   (',
+        '       resolution is not EMPTY AND ',
+        '       resolutiondate >= %s',
+        '   )',
+        ')',
+        ' AND status != Dropped',
+        ' AND statusCategory != "To Do"',
+    ])
     query = tmpl % (args.project, args.since)
+    print(query, file=sys.stderr)
     issues = client.search_issues(query)
     for issue in issues:
         yield issue
@@ -187,6 +190,8 @@ def collate_issues(client, args, issues):
         objectives[objective].add(epic_key)
 
         # Associate the issue with the enriched epic.
+        print("Found %r on %r, under %r" % (issue.key, epic_key, objective),
+              file=sys.stderr)
         category = issue.fields.status.raw['statusCategory']['name']
         by_epic[epic_key][category].add(issue)
 
@@ -209,4 +214,4 @@ if __name__ == '__main__':
     data = collate_issues(client, args, issues)
 
     output = render(args, data)
-    print output.encode('utf-8')
+    print(output.encode('utf-8'))
