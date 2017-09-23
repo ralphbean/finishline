@@ -48,6 +48,8 @@ def parse_arguments():
     parser.add_argument('--template', help='Path to a template for output.')
     parser.add_argument('--epic-field', help='Epic field key.',
                         default='customfield_10006')
+    parser.add_argument('--hide-epics', help='Comma separated list of epics',
+                        default=None)
     parser.add_argument('--mvp-status-field', help='MVP status field key.',
                         default='customfield_11908')
     parser.add_argument('--story-point-field', help='Story point field key.',
@@ -70,6 +72,10 @@ def parse_arguments():
         raise ValueError('--title is required')
     if not args.template:
         raise ValueError('--template is required')
+    if args.hide_epics:
+        args.hide_epics = args.hide_epics.split(',')
+    else:
+        args.hide_epics = []
     return args
 
 
@@ -138,6 +144,10 @@ def extract_mvp_status(args, epic):
     return epic.raw['fields'].get(args.mvp_status_field)
 
 
+def extract_target_date(args, epic):
+    return epic.raw['fields']['duedate']
+
+
 def extract_percent_complete(client, args, epic):
     tmpl = (
         'project = %s'
@@ -170,6 +180,7 @@ def get_epic_details(client, args, key):
     epic.percent_complete = extract_percent_complete(client, args, epic)
     epic.status_update = extract_status_update(args, epic)
     epic.mvp_status = extract_mvp_status(args, epic)
+    epic.target_date = extract_target_date(args, epic)
     epic.objective = extract_objective(args, epic)
 
     return epic
@@ -181,6 +192,14 @@ def collate_issues(client, args, issues):
     by_epic = collections.defaultdict(lambda: collections.defaultdict(set))
     for issue in issues:
         epic_key = issue.raw['fields'][args.epic_field]
+
+        # Ignore orphan tasks, unassociated with an epic.
+        if not epic_key:
+            continue
+
+        # If this is on a verboten epic, ditch it.
+        if epic_key in args.hide_epics:
+            continue
 
         # Enrich with details
         if not epic_key in epics:

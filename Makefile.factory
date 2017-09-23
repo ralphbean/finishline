@@ -3,16 +3,33 @@ install:
 	test -d venv || virtualenv venv
 	venv/bin/pip install -Ur requirements.txt
 
-build: install
+buildsprint: install
 	venv/bin/python finishline.py \
 		--server https://projects.engineering.redhat.com \
 		--project FACTORY \
-		--title "Factory 2.0, Review" \
+		--title "Factory 2.0, Sprint 39" \
+		--hide-epics FACTORY-513,FACTORY-1337 \
 		--subtitle "$(shell date '+%B %d, %Y') — PnT DevOps" \
 		--template threebean/slides.md > foo.md # \
 		# --attribution
+		#--since "$(shell date -d '1 month ago' '+%Y-%m-%d')" \
 
-upload: build
+uploadsprint: buildsprint
 	~/node_modules/md2gslides/bin/md2gslides.js foo.md \
-		-t "Factory 2.0, Review" \
-		#-e -a 1TlaHBjOeIdvbZrGBu3oFcFnBHvFB1f2R1Cg5kdK6wr8
+		-t "Factory 2.0, Sprint 39"
+
+buildstatus: install
+	venv/bin/python finishline.py \
+		--server https://projects.engineering.redhat.com \
+		--project FACTORY \
+		--title "Factory 2.0, Status" \
+		--hide-epics FACTORY-513,FACTORY-1337 \
+		--subtitle "$(shell date '+%B %d, %Y') — PnT DevOps" \
+		--attribution \
+		--template threebean/slides.md > foo.md # \
+		#--since "$(shell date -d '1 month ago' '+%Y-%m-%d')" \
+
+uploadstatus: buildstatus
+	~/node_modules/md2gslides/bin/md2gslides.js foo.md \
+		-t "Factory 2.0, Status" \
+		-e -a 1nupBVPwzWeUP6n-vJh5YEhYoHjecCkzFXQvt9V0GG88
