@@ -46,6 +46,7 @@ def parse_arguments():
     parser.add_argument('--title', help='Title of the report.')
     parser.add_argument('--subtitle', help='Subtitle of the report.')
     parser.add_argument('--template', help='Path to a template for output.')
+    parser.add_argument('--references', help='Path to an extra template.')
     parser.add_argument('--epic-field', help='Epic field key.',
                         default='customfield_10006')
     parser.add_argument('--hide-epics', help='Comma separated list of epics',
@@ -91,6 +92,10 @@ def render(args, data):
     data['today'] = datetime.datetime.utcnow().strftime(date_format)
 
     data.update(args._get_kwargs())
+
+    if args.references:
+        references = env.get_template(args.references)
+        data['references'] = references.render(**data)
 
     return template.render(**data)
 

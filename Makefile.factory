@@ -10,6 +10,7 @@ buildsprint: install
 		--title "Factory 2.0, Sprint 39" \
 		--hide-epics FACTORY-513,FACTORY-1337 \
 		--subtitle "$(shell date '+%B %d, %Y') — PnT DevOps" \
+		--references threebean/references.md \
 		--template threebean/slides.md > foo.md # \
 		# --attribution
 		#--since "$(shell date -d '1 month ago' '+%Y-%m-%d')" \
@@ -26,6 +27,7 @@ buildstatus: install
 		--hide-epics FACTORY-513,FACTORY-1337 \
 		--subtitle "$(shell date '+%B %d, %Y') — PnT DevOps" \
 		--attribution \
+		--references threebean/references.md \
 		--template threebean/slides.md > foo.md # \
 		#--since "$(shell date -d '1 month ago' '+%Y-%m-%d')" \
 

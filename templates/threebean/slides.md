@@ -30,4 +30,9 @@
 ---{% endfor %}
 {% endfor %}
 # Thank you {.big}
-Slides auto-generated from JIRA data with [finishline](https://github.com/ralphbean/finishline).
+
+Auto-generated from JIRA data with [finishline](https://github.com/ralphbean/finishline).
+{% if references %}
+---
+{{references}}
+{% endif %}
