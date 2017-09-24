@@ -35,3 +35,14 @@ uploadstatus: buildstatus
 	~/node_modules/md2gslides/bin/md2gslides.js foo.md \
 		-t "Factory 2.0, Status" \
 		-e -a 1nupBVPwzWeUP6n-vJh5YEhYoHjecCkzFXQvt9V0GG88
+
+okrs: install
+	venv/bin/python finishline.py \
+		--server https://projects.engineering.redhat.com \
+		--project FACTORY \
+		--title "Factory 2.0, OKRs" \
+		--hide-epics FACTORY-513,FACTORY-1337 \
+		--template threebean/okrs.csv > okrs.csv
+	echo " -- done -- "
+	cat okrs.csv
+	xclip -i okrs.csv -selection clipboard

@@ -150,7 +150,11 @@ def extract_mvp_status(args, epic):
 
 
 def extract_target_date(args, epic):
-    return epic.raw['fields']['duedate']
+    return epic.raw['fields']['duedate'] or ''
+
+
+def extract_owner(args, epic):
+    return epic.raw['fields']['assignee']
 
 
 def extract_percent_complete(client, args, epic):
@@ -186,6 +190,7 @@ def get_epic_details(client, args, key):
     epic.status_update = extract_status_update(args, epic)
     epic.mvp_status = extract_mvp_status(args, epic)
     epic.target_date = extract_target_date(args, epic)
+    epic.owner = extract_owner(args, epic)
     epic.objective = extract_objective(args, epic)
 
     return epic
