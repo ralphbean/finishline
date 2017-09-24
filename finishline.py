@@ -224,7 +224,21 @@ def collate_issues(client, args, issues):
         category = issue.fields.status.raw['statusCategory']['name']
         by_epic[epic_key][category].add(issue)
 
-    return dict(epics=epics, by_epic=by_epic, objectives=objectives)
+    # Bubble up the KR completion to an average value for the objective.
+    objective_completion = {}
+    for objective in objectives:
+        objective_completion[objective] = sum(
+            float(epic.percent_complete)
+            for key, epic in epics.items()
+            if key in objectives[objective]
+        ) / len(objectives[objective])
+
+    return dict(
+        epics=epics,
+        by_epic=by_epic,
+        objectives=objectives,
+        objective_completion=objective_completion,
+    )
 
 
 if __name__ == '__main__':
