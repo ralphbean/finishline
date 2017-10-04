@@ -1,17 +1,16 @@
-# {{title}}
-{% if subtitle %}
-## {{subtitle.decode('utf-8')}}
+{{title}}
+{% if subtitle %}{{subtitle.decode('utf-8')}}
 {% endif %}
 ---
 # OKR Summary
 {% for objective in objectives | sort %}
-* {{objective}}{% for key, epic in epics.items() if epic and key in objectives[objective] %}
-  * [{{ epic.raw['fields']['summary'].split('\n')[0] }}]({{ server }}/browse/{{ key }})  {{epic.percent_complete}}%{% endfor %}
+{{objective}}{% for key, epic in epics.items() if epic and key in objectives[objective] %}
+  {{ epic.raw['fields']['summary'].split('\n')[0] }} - {{ server }}/browse/{{ key }} - {{epic.percent_complete}}%{% endfor %}
 {% endfor %}
 ---
 {% for objective in objectives | sort %}# {{ objective }}
 {% for key, epic in epics.items() if epic and key in objectives[objective] %}
-## [{{ epic.raw['fields']['summary'].split('\n')[0].strip() }}]({{ server }}/browse/{{ key }})
+{{ epic.raw['fields']['summary'].split('\n')[0].strip() }} - {{ server }}/browse/{{ key }}
 
 - Progress:  {{epic.percent_complete}}%{% if epic.target_date %}
 - Target: {{ epic.target_date}}{% endif %}{% if epic.mvp_status %}
@@ -20,8 +19,7 @@
 {% for category in by_epic[key] | sort %}
 **{{ category }}**:
 {% for issue in by_epic[key][category] %}
-* ([{{ issue.key }}]({{ server }}/browse/{{ issue.key }}))
-  {{ issue.raw['fields']['summary'].replace('[', '').replace(']', ':') }}{% endfor %}
+- {{ issue.key }} - {{ issue.raw['fields']['summary'].replace('[', '').replace(']', ':') }}{% endfor %}
 {% endfor %}
 ---{% endfor %}
 {% endfor %}
