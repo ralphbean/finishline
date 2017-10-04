@@ -7,17 +7,17 @@ buildsprint: install
 	venv/bin/python finishline.py \
 		--server https://projects.engineering.redhat.com \
 		--project FACTORY \
-		--title "Factory 2.0, Sprint 39" \
+		--title "Factory 2.0, Sprint 40" \
 		--hide-epics FACTORY-513,FACTORY-1337 \
 		--subtitle "$(shell date '+%B %d, %Y') — PnT DevOps" \
 		--references threebean/references.md \
+		--attribution \
 		--template threebean/slides.md > foo.md # \
-		# --attribution
 		#--since "$(shell date -d '1 month ago' '+%Y-%m-%d')" \
 
 uploadsprint: buildsprint
 	~/node_modules/md2gslides/bin/md2gslides.js foo.md \
-		-t "Factory 2.0, Sprint 39"
+		-t "Factory 2.0, Sprint 40"
 
 buildstatus: install
 	venv/bin/python finishline.py \
