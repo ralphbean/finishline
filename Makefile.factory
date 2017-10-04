@@ -46,3 +46,15 @@ okrs: install
 	echo " -- done -- "
 	cat okrs.csv
 	xclip -i okrs.csv -selection clipboard
+
+buildemail: install
+	venv/bin/python finishline.py \
+		--server https://projects.engineering.redhat.com \
+		--project FACTORY \
+		--title "Factory 2.0 Status" \
+		--hide-epics FACTORY-513,FACTORY-1337 \
+		--subtitle "$(shell date '+%B %d, %Y') — PnT DevOps" \
+		--references threebean/references.md \
+		--attribution \
+		--template threebean/email.md > email.md # \
+		#--since "$(shell date -d '1 month ago' '+%Y-%m-%d')" \
