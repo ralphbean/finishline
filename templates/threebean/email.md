@@ -15,7 +15,7 @@
 - Progress:  {{epic.percent_complete}}%{% if epic.target_date %}
 - Target: {{ epic.target_date}}{% endif %}{% if epic.mvp_status %}
 - Status: {{ epic.mvp_status['value']}}{% endif %}{% if epic.status_update %}
-- Update: (*{{epic.status_update.updated.split('T')[0]}}*) {{epic.status_update.cleaned}}{% if attribution %} — *{{epic.status_update.author}}*{% endif %}{% endif %}
+- Update: (*{{epic.status_update.updated.split('T')[0]}}*) {{epic.status_update.cleaned}}{% if attribution %} — {{epic.status_update.author}}{% endif %}{% endif %}
 {% for category in by_epic[key] | sort %}
 **{{ category }}**:
 {% for issue in by_epic[key][category] %}
