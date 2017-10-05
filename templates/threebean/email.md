@@ -1,6 +1,9 @@
 {{title}}
 {% if subtitle %}{{subtitle.decode('utf-8')}}
 {% endif %}
+Inbetween these email updates, you should be able to find our latest status at:
+https://docs.google.com/presentation/d/1nupBVPwzWeUP6n-vJh5YEhYoHjecCkzFXQvt9V0GG88/edit
+
 ---
 # OKR Summary
 {% for objective in objectives | sort %}
@@ -27,3 +30,5 @@
 
 For any questions, feel free to reach out to mikeb@redhat.com (Product Owner)
 and rbean@redhat.com (Team Lead), respond on list, or join to chat in #pnt-devops-dev.
+
+Feedback on the format of this email is appreciated.  Too much detail?  Not enough?  Let us know.
