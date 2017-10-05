@@ -56,5 +56,5 @@ buildemail: install
 		--subtitle "$(shell date '+%B %d, %Y') — PnT DevOps" \
 		--references threebean/references.md \
 		--attribution \
-		--template threebean/email.md > email.md # \
+		--template threebean/email.md > report-$(shell date '+%F').md #
 		#--since "$(shell date -d '1 month ago' '+%Y-%m-%d')" \
