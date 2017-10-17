@@ -7,8 +7,8 @@ buildsprint: install
 	venv/bin/python finishline.py \
 		--server https://projects.engineering.redhat.com \
 		--project FACTORY \
-		--title "Factory 2.0, Sprint 40" \
-		--hide-epics FACTORY-513,FACTORY-1337 \
+		--title "Factory 2.0, Sprint 41" \
+		--hide-epics FACTORY-513,FACTORY-1337,FACTORY-1340 \
 		--subtitle "$(shell date '+%B %d, %Y') — PnT DevOps" \
 		--references threebean/references.md \
 		--attribution \
@@ -17,14 +17,14 @@ buildsprint: install
 
 uploadsprint: buildsprint
 	~/node_modules/md2gslides/bin/md2gslides.js foo.md \
-		-t "Factory 2.0, Sprint 40"
+		-t "Factory 2.0, Sprint 41"
 
 buildstatus: install
 	venv/bin/python finishline.py \
 		--server https://projects.engineering.redhat.com \
 		--project FACTORY \
 		--title "Factory 2.0, Status" \
-		--hide-epics FACTORY-513,FACTORY-1337 \
+		--hide-epics FACTORY-513,FACTORY-1337,FACTORY-1340 \
 		--subtitle "$(shell date '+%B %d, %Y') — PnT DevOps" \
 		--attribution \
 		--references threebean/references.md \
@@ -41,7 +41,7 @@ okrs: install
 		--server https://projects.engineering.redhat.com \
 		--project FACTORY \
 		--title "Factory 2.0, OKRs" \
-		--hide-epics FACTORY-513,FACTORY-1337 \
+		--hide-epics FACTORY-513,FACTORY-1337,FACTORY-1340 \
 		--template threebean/okrs.csv > okrs.csv
 	echo " -- done -- "
 	cat okrs.csv
@@ -52,7 +52,7 @@ buildemail: install
 		--server https://projects.engineering.redhat.com \
 		--project FACTORY \
 		--title "Factory 2.0 Status" \
-		--hide-epics FACTORY-513,FACTORY-1337 \
+		--hide-epics FACTORY-513,FACTORY-1337,FACTORY-1340 \
 		--subtitle "$(shell date '+%B %d, %Y') — PnT DevOps" \
 		--references threebean/references.md \
 		--attribution \
