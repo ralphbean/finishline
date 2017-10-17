@@ -115,7 +115,7 @@ def pull_issues(client, args):
     ])
     query = tmpl % (args.project, args.since)
     print(query, file=sys.stderr)
-    issues = client.search_issues(query)
+    issues = client.search_issues(query, maxResults=999)
     for issue in issues:
         yield issue
 
