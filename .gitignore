@@ -3,3 +3,6 @@ venv
 foo.md
 okrs.csv
 email.md
+.ropeproject
+node_modules
+package-lock.json
