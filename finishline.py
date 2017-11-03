@@ -22,7 +22,8 @@ date_format = '%Y-%m-%d'
 
 custom_filters = {
     'slugify': lambda x: x.lower().replace(' ', '-'),
-    'rst2html': lambda rst: docutils.examples.html_parts(rst, input_encoding='utf-8')['body'],
+    'rst2html': lambda rst: docutils.examples.html_parts(
+        rst, input_encoding='utf-8')['body'],
     'replace': lambda string, char: char * len(string),
 }
 
@@ -185,7 +186,7 @@ def get_epic_details(client, args, key):
         return None
     epic = client.issue(key)
 
-    #epic.image_url = 'https://placekitten.com/1600/900'
+    # epic.image_url = 'https://placekitten.com/1600/900'
     epic.percent_complete = extract_percent_complete(client, args, epic)
     epic.status_update = extract_status_update(args, epic)
     epic.mvp_status = extract_mvp_status(args, epic)
@@ -212,10 +213,11 @@ def collate_issues(client, args, issues):
             continue
 
         # Enrich with details
-        if not epic_key in epics:
+        if epic_key not in epics:
             epics[epic_key] = get_epic_details(client, args, epic_key)
 
-        objective = getattr(epics[epic_key], 'objective', args.placeholder_objective)
+        placeholder = args.placeholder_objective
+        objective = getattr(epics[epic_key], 'objective', placeholder)
         objectives[objective].add(epic_key)
 
         # Associate the issue with the enriched epic.
