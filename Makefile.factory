@@ -24,7 +24,7 @@ buildstatus: install
 		--server https://projects.engineering.redhat.com \
 		--project FACTORY \
 		--title "Factory 2.0, Status" \
-		--hide-epics FACTORY-513,FACTORY-1337,FACTORY-1340,OSBS-920 \
+		--hide-epics FACTORY-513,FACTORY-1337,FACTORY-1340,FACTORY-1336,OSBS-920 \
 		--subtitle "$(shell date '+%B %d, %Y') — PnT DevOps" \
 		--attribution \
 		--references threebean/references.md \
@@ -41,7 +41,8 @@ okrs: install
 		--server https://projects.engineering.redhat.com \
 		--project FACTORY \
 		--title "Factory 2.0, OKRs" \
-		--hide-epics FACTORY-513,FACTORY-1337,FACTORY-1340,OSBS-920 \
+		--hide-epics FACTORY-1337,FACTORY-1340,FACTORY-1336,OSBS-920 \
+		--include-epics FACTORY-1394,FACTORY-1392,FACTORY-517,FACTORY-1384,FACTORY-1385,FACTORY-1341,FACTORY-1338,FACTORY-1334,FACTORY-1333,FACTORY-1332 \
 		--template threebean/okrs.csv > okrs.csv
 	echo " -- done -- "
 	cat okrs.csv
@@ -52,7 +53,7 @@ buildemail: install
 		--server https://projects.engineering.redhat.com \
 		--project FACTORY \
 		--title "Factory 2.0 Status" \
-		--hide-epics FACTORY-513,FACTORY-1337,FACTORY-1340,OSBS-920 \
+		--hide-epics FACTORY-513,FACTORY-1337,FACTORY-1340,FACTORY-1336,OSBS-920 \
 		--subtitle "$(shell date '+%B %d, %Y') — PnT DevOps" \
 		--references threebean/references.md \
 		--attribution \

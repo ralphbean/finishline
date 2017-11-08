@@ -52,6 +52,8 @@ def parse_arguments():
                         default='customfield_10006')
     parser.add_argument('--hide-epics', help='Comma separated list of epics',
                         default=None)
+    parser.add_argument('--include-epics', help='Comma separated list of epics',
+                        default=None)
     parser.add_argument('--mvp-status-field', help='MVP status field key.',
                         default='customfield_11908')
     parser.add_argument('--story-point-field', help='Story point field key.',
@@ -78,6 +80,10 @@ def parse_arguments():
         args.hide_epics = args.hide_epics.split(',')
     else:
         args.hide_epics = []
+    if args.include_epics:
+        args.include_epics = args.include_epics.split(',')
+    else:
+        args.include_epics = []
     return args
 
 
@@ -201,6 +207,18 @@ def collate_issues(client, args, issues):
     epics = {}
     objectives = collections.defaultdict(set)
     by_epic = collections.defaultdict(lambda: collections.defaultdict(set))
+
+    # First, handle any explicitly listed epics, even if they have no curent
+    # work in the `issues` list.
+    for epic_key in args.include_epics:
+        if epic_key not in epics:
+            epics[epic_key] = get_epic_details(client, args, epic_key)
+
+        placeholder = args.placeholder_objective
+        objective = getattr(epics[epic_key], 'objective', placeholder)
+        objectives[objective].add(epic_key)
+
+    # Second, do our main work of processing the individual issues passed in.
     for issue in issues:
         epic_key = issue.raw['fields'][args.epic_field]
 
