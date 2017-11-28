@@ -7,7 +7,7 @@ buildsprint: install
 	venv/bin/python finishline.py \
 		--server https://projects.engineering.redhat.com \
 		--project FACTORY \
-		--title "Factory 2.0, Sprint 43" \
+		--title "Factory 2.0, Sprint 44" \
 		--hide-epics FACTORY-513,FACTORY-1337,FACTORY-1340,FACTORY-1336,OSBS-920,OSBS-4619,FACTORY-1342,FACTORY-1628,FACTORY-1618 \
 		--subtitle "$(shell date '+%B %d, %Y') — PnT DevOps" \
 		--references threebean/references.md \
@@ -17,8 +17,8 @@ buildsprint: install
 
 uploadsprint: buildsprint
 	./node_modules/md2gslides/bin/md2gslides.js foo.md \
-		-t "Factory 2.0, Sprint 43" \
-		-e -a 1xsv-ssHzoN-_htCFBD-iK0g3UMAosOc4QqLBJpWzbLs
+		-t "Factory 2.0, Sprint 44" \
+		-e -a 1iC2PorsvHJc41A2SlbmiB1VL2WnUfJTi6f3obYuFOEI
 
 buildstatus: install
 	venv/bin/python finishline.py \
