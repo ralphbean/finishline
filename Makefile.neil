@@ -1,0 +1,16 @@
+install:
+	test -d ./node_modules/md2gslides/bin/ || npm install md2gslides
+	test -d venv || virtualenv venv
+	venv/bin/pip install -Ur requirements.txt
+
+okrs: install
+	venv/bin/python finishline.py \
+		--server https://projects.engineering.redhat.com \
+		--project FACTORY \
+		--title "Factory 2.0, OKRs" \
+		--hide-epics FACTORY-1337,FACTORY-1340,FACTORY-1336,OSBS-920,OSBS-4619,FACTORY-1342,FACTORY-1628,FACTORY-1618 \
+		--include-epics FACTORY-1394,FACTORY-1392,FACTORY-517,FACTORY-1384,FACTORY-1385,FACTORY-1341,FACTORY-1338,FACTORY-1334,FACTORY-1333,FACTORY-1332 \
+		--template threebean/okrs.csv > okrs.csv
+	echo " -- done -- "
+	cat okrs.csv
+	xclip -i okrs.csv -selection clipboard
