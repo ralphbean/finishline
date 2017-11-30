@@ -84,6 +84,9 @@ def parse_arguments():
         args.include_epics = args.include_epics.split(',')
     else:
         args.include_epics = []
+    for epic in args.include_epics:
+        if epic in args.hide_epics:
+            raise ValueError("%r may not be both hidden and included." % epic)
     return args
 
 
@@ -184,7 +187,7 @@ def extract_percent_complete(client, args, epic):
     if total_points:
         return "%0.1f" % (closed_points / total_points * 100)
     else:
-        return "undefined"
+        return "nan"  # not a number
 
 
 def get_epic_details(client, args, key):
