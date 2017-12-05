@@ -1,0 +1,4 @@
+||Status||Owner||Task||Original Date||Actual Date||Notes||Progress||
+{% for objective in objectives | sort %}|| || || {{ objective }} || || || || ||
+{% for key, epic in epics.items() if epic and key in objectives[objective] %}|{status:colour={{epic.mvp_status['value']}}|title={{epic.mvp_status['value']}}}| [~{{epic.owner['name']}}] | [{{epic.raw['fields']['summary'].split('\n')[0].split('KR:')[-1].strip() }}|https://projects.engineering.redhat.com/browse/{{key}}|{{key}}] | {{epic.target_date}} | {{epic.target_date}} | {{epic.status_update.cleaned}} | {{epic.percent_complete}}% |
+{% endfor %}{% endfor %}
