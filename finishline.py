@@ -60,7 +60,8 @@ def parse_arguments():
                         default='customfield_10006')
     parser.add_argument('--hide-epics', help='Comma separated list of epics',
                         default=None)
-    parser.add_argument('--include-epics', help='Comma separated list of epics',
+    parser.add_argument('--include-epics',
+                        help='Comma separated list of epics',
                         default=None)
     parser.add_argument('--mvp-status-field', help='MVP status field key.',
                         default='customfield_11908')
