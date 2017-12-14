@@ -261,7 +261,7 @@ def collate_issues(client, args, issues):
     for objective in objectives:
         objective_completion[objective] = sum(
             float(epic.percent_complete)
-            for key, epic in epics.items()
+            for key, epic in list(epics.items())
             if key in objectives[objective]
         ) / len(objectives[objective])
 
