@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """ Finish Line!  A CLI tool for wrapping up your sprints.
 
 See the README for more information.
