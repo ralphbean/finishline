@@ -10,6 +10,7 @@ from __future__ import print_function
 import argparse
 import collections
 import datetime
+import re
 import sys
 
 import bs4
@@ -144,6 +145,10 @@ def extract_status_update(args, epic):
                 # Attach a cleaned version for the template.
                 body = body[len(sentinnel):].strip()
                 body = body.split('\n')[0].strip()
+
+                # Replace [~username] with **@username** to not freakout google.
+                body = re.sub(r'\[\~([a-zA-Z]+)\]', r'**@\1**', body)
+
                 comment.cleaned = body
                 return comment
 
