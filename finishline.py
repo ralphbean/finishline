@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """ Finish Line!  A CLI tool for wrapping up your sprints.
 
 See the README for more information.
@@ -13,11 +14,18 @@ import datetime
 import re
 import sys
 
-import bs4
-import docutils.examples
-import jinja2
+try:
+    import bs4
+    import docutils.examples
+    import jinja2
 
-import jira
+    import jira
+except ImportError as error:
+    print('ERROR: Unable to import required libraries. '
+          'Ensure all libraries in requirements.txt are installed.')
+    print(error)
+    raise SystemExit(1)
+
 
 date_format = '%Y-%m-%d'
 
@@ -53,7 +61,8 @@ def parse_arguments():
                         default='customfield_10006')
     parser.add_argument('--hide-epics', help='Comma separated list of epics',
                         default=None)
-    parser.add_argument('--include-epics', help='Comma separated list of epics',
+    parser.add_argument('--include-epics',
+                        help='Comma separated list of epics',
                         default=None)
     parser.add_argument('--mvp-status-field', help='MVP status field key.',
                         default='customfield_11908')
@@ -257,7 +266,7 @@ def collate_issues(client, args, issues):
     for objective in objectives:
         objective_completion[objective] = sum(
             float(epic.percent_complete)
-            for key, epic in epics.items()
+            for key, epic in list(epics.items())
             if key in objectives[objective]
         ) / len(objectives[objective])
 
