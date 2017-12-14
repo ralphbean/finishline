@@ -13,11 +13,18 @@ import collections
 import datetime
 import sys
 
-import bs4
-import docutils.examples
-import jinja2
+try:
+    import bs4
+    import docutils.examples
+    import jinja2
 
-import jira
+    import jira
+except ImportError as error:
+    print('ERROR: Unable to import required libraries. '
+          'Ensure all libraries in requirements.txt are installed.')
+    print(error)
+    raise SystemExit(1)
+
 
 date_format = '%Y-%m-%d'
 
