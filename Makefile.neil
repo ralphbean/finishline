@@ -4,7 +4,7 @@ install:
 	venv/bin/pip install -Ur requirements.txt
 
 okrs: install
-	venv/bin/python finishline.py \
+	venv/bin/python finishline \
 		--server https://projects.engineering.redhat.com \
 		--project FACTORY \
 		--title "Factory 2.0, OKRs" \
