@@ -10,9 +10,11 @@ from __future__ import print_function
 
 import argparse
 import collections
+import configparser
 import datetime
 import re
 import sys
+
 
 try:
     import bs4
@@ -44,9 +46,24 @@ def scrape_links(session, args):
 
 
 def parse_arguments():
+    config_parser = argparse.ArgumentParser(add_help=False)
+    config_parser.add_argument("-c", "--config",
+                               help="Use config file instead of switches.")
+
+    args, remaining_argv = config_parser.parse_known_args()
+    option_defaults = {}
+
+    if args.config:
+        config_file = configparser.SafeConfigParser()
+        config_file.read([args.config])
+        option_defaults.update(dict(config_file.items("options")))
+
     two_weeks = datetime.timedelta(days=14)
     default_since = (datetime.date.today() - two_weeks).strftime(date_format)
-    parser = argparse.ArgumentParser()
+
+    parser = argparse.ArgumentParser(parents=[config_parser])
+    parser.set_defaults(**option_defaults)
+
     parser.add_argument('--server', help='server to your JIRA instance.')
     parser.add_argument('--cacert', help='CA cert for https validation.',
                         default='/etc/pki/tls/certs/ca-bundle.crt')
@@ -86,6 +103,7 @@ def parse_arguments():
         raise ValueError('--title is required')
     if not args.template:
         raise ValueError('--template is required')
+
     if args.hide_epics:
         args.hide_epics = args.hide_epics.split(',')
     else:
