@@ -95,15 +95,21 @@ def parse_arguments():
     parser.add_argument('--attribution', help='Show attribution for status.',
                         default=False, action='store_true')
     args = parser.parse_args()
-    if not args.server:
-        raise ValueError('--server is required')
-    if not args.project:
-        raise ValueError('--project is required')
-    if not args.title:
-        raise ValueError('--title is required')
-    if not args.template:
-        raise ValueError('--template is required')
 
+    # Manually check requirements so that we may use defaults from a file
+    required_options = []
+    if not args.server:
+        required_options.append('--server')
+    if not args.project:
+        required_options.append('--project')
+    if not args.title:
+        required_options.append('--title')
+    if not args.template:
+        required_options.append('--template')
+    if len(required_options) > 0:
+        parser.error(
+            'The following options are missing, but required: {}'.format(
+                ", ".join(required_options)))
     if args.hide_epics:
         args.hide_epics = args.hide_epics.split(',')
     else:
@@ -114,7 +120,7 @@ def parse_arguments():
         args.include_epics = []
     for epic in args.include_epics:
         if epic in args.hide_epics:
-            raise ValueError("%r may not be both hidden and included." % epic)
+            parser.error("%r may not be both hidden and included." % epic)
     return args
 
 
