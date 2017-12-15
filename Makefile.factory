@@ -4,7 +4,7 @@ install:
 	venv/bin/pip install -Ur requirements.txt
 
 buildsprint: install
-	venv/bin/python finishline.py \
+	venv/bin/python finishline \
 		--server https://projects.engineering.redhat.com \
 		--project FACTORY \
 		--title "Factory 2.0, Sprint ##" \
@@ -20,7 +20,7 @@ uploadsprint: buildsprint
 		-t "Factory 2.0, Sprint ##" \
 
 buildstatus: install
-	venv/bin/python finishline.py \
+	venv/bin/python finishline \
 		--server https://projects.engineering.redhat.com \
 		--project FACTORY \
 		--title "Factory 2.0, FY18Q4 Status" \
@@ -38,7 +38,7 @@ uploadstatus: buildstatus
 		-e -a 1nupBVPwzWeUP6n-vJh5YEhYoHjecCkzFXQvt9V0GG88
 
 okrs: install
-	venv/bin/python finishline.py \
+	venv/bin/python finishline \
 		--server https://projects.engineering.redhat.com \
 		--project FACTORY \
 		--title "Factory 2.0, OKRs" \
@@ -50,7 +50,7 @@ okrs: install
 	xclip -i okrs.csv -selection clipboard
 
 confluence: install
-	venv/bin/python finishline.py \
+	venv/bin/python finishline \
 		--server https://projects.engineering.redhat.com \
 		--project FACTORY \
 		--title "Factory 2.0, OKRs" \
@@ -62,7 +62,7 @@ confluence: install
 	xclip -i confluence.something -selection clipboard
 
 buildemail: install
-	venv/bin/python finishline.py \
+	venv/bin/python finishline \
 		--server https://projects.engineering.redhat.com \
 		--project FACTORY \
 		--title "Factory 2.0, FY18Q4 Status" \

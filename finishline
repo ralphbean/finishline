@@ -155,7 +155,8 @@ def extract_status_update(args, epic):
                 body = body[len(sentinnel):].strip()
                 body = body.split('\n')[0].strip()
 
-                # Replace [~username] with **@username** to not freakout google.
+                # Replace [~username] with **@username** to not
+                # freakout google.
                 body = re.sub(r'\[\~([a-zA-Z]+)\]', r'**@\1**', body)
 
                 comment.cleaned = body
