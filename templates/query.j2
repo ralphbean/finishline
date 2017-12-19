@@ -1,0 +1,9 @@
+project = {{ project }}
+AND (
+  resolution is EMPTY OR (
+    resolution is not EMPTY
+    AND resolutiondate >= {{ since }}
+  )
+)
+AND status != Dropped
+AND statusCategory != "To Do"
