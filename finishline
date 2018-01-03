@@ -77,6 +77,12 @@ def parse_arguments():
     parser.add_argument('--title', help='Title of the report.')
     parser.add_argument('--subtitle', help='Subtitle of the report.')
     parser.add_argument('--template', help='Path to a template for output.')
+    parser.add_argument('--query-template',
+                        help='Path to a template to generate a query.',
+                        default='query.j2')
+    parser.add_argument(
+        '-Q', '--query-context', action="append", default=[],
+        help='Extra context to add when rendering the query template.')
     parser.add_argument('--references', help='Path to an extra template.')
     parser.add_argument('--epic-field', help='Epic field key.',
                         default='customfield_10006')
@@ -128,12 +134,22 @@ def parse_arguments():
     return args
 
 
-def render(args, data):
+def render(tpl, args, data):
+    """
+    Renders a template based on input.
+
+    :param tpl: The template to render.
+    :type tpl: str
+    :param args: Arguments to pass to jinja2.Template.render.
+    :type args: argparse.Namespace
+    :param data: Data to pass in as part of the render context
+    :type data: dict
+    """
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader('templates'),
     )
     env.filters.update(custom_filters)
-    template = env.get_template(args.template)
+    template = env.get_template(tpl)
 
     data = data.copy()
 
@@ -141,27 +157,36 @@ def render(args, data):
 
     data.update(args._get_kwargs())
 
-    if args.references:
+    # If refernces exists in the namespace AND it results in a bool True
+    if getattr(args, 'references', None) and args.references:
         references = env.get_template(args.references)
         data['references'] = references.render(**data)
 
     return template.render(**data)
 
 
+def _split_context(context_data):
+    """
+    Splits k=v,k=v,.. strings into a dictionary.
+
+    :param context_data: key=val list
+    :type context_data: list
+    :returns: A parsed context
+    :rtype: dict
+    :raises: IndexError
+    """
+    result = {}
+    for item in context_data:
+        k, v = item.split('=')
+        result[k] = v
+    return result
+
+
 def pull_issues(client, args):
-    tmpl = '\n'.join([
-        ' project = %s',
-        ' AND (',
-        '   resolution is EMPTY OR ',
-        '   (',
-        '       resolution is not EMPTY AND ',
-        '       resolutiondate >= %s',
-        '   )',
-        ')',
-        ' AND status != Dropped',
-        ' AND statusCategory != "To Do"',
-    ])
-    query = tmpl % (args.project, args.since)
+    # Get any extra context items for the query
+    query_context = _split_context(args.query_context)
+    # Render the template with extra context into a query we can use
+    query = render(args.query_template, args, query_context)
     print(query, file=sys.stderr)
     issues = client.search_issues(query, maxResults=999)
     for issue in issues:
@@ -322,5 +347,5 @@ if __name__ == '__main__':
     issues = pull_issues(client, args)
     data = collate_issues(client, args, issues)
 
-    output = render(args, data)
+    output = render(args.template, args, data)
     print(output.encode('utf-8'))
