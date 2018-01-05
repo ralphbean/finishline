@@ -191,6 +191,8 @@ def pull_issues(client, args):
     query = render(args.query_template, args, query_context)
     print(query, file=sys.stderr)
     issues = client.search_issues(query, maxResults=999)
+    # NOTE: since this yields functionality won't occur until the first
+    # iteration over the return value
     for issue in issues:
         yield issue
 
