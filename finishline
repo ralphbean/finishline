@@ -78,8 +78,7 @@ def parse_arguments():
     parser.add_argument('--subtitle', help='Subtitle of the report.')
     parser.add_argument('--template', help='Path to a template for output.')
     parser.add_argument('--query-template',
-                        help='Path to a template to generate a query.',
-                        default='query.j2')
+                        help='Path to a template to generate a query.')
     parser.add_argument(
         '-Q', '--query-context', action="append", default=[],
         help='Extra context to add when rendering the query template.')
@@ -131,6 +130,9 @@ def parse_arguments():
     for epic in args.include_epics:
         if epic in args.hide_epics:
             parser.error("%r may not be both hidden and included." % epic)
+    # Fall back to query.j2
+    if not args.query_template:
+        args.query_template = 'query.j2'
     return args
 
 
