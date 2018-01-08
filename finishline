@@ -321,7 +321,7 @@ def collate_issues(client, args, issues):
         print("Found %r on %r, under %r" % (issue.key, epic_key, objective),
               file=sys.stderr)
         category = issue.fields.status.raw['statusCategory']['name']
-        by_epic[epic_key][category].add(issue)
+        by_epic[epic_key][category].add(str(issue))
 
     # Bubble up the KR completion to an average value for the objective.
     objective_completion = {}
