@@ -84,6 +84,9 @@ def parse_arguments():
     parser.add_argument('--template', help='Path to a template for output.')
     parser.add_argument('--query-template',
                         help='Path to a template to generate a query.')
+    parser.add_argument('--okr-query-template',
+                        help='Path to an okr query template.')
+
     parser.add_argument(
         '-Q', '--query-context', action="append", default=[],
         help='Extra context to add when rendering the query template.')
@@ -135,9 +138,12 @@ def parse_arguments():
     for epic in args.include_epics:
         if epic in args.hide_epics:
             parser.error("%r may not be both hidden and included." % epic)
-    # Fall back to query.j2
+    # Fall back to default templates
     if not args.query_template:
         args.query_template = 'query.j2'
+    if not args.okr_query_template:
+        args.okr_query_template = 'okrquery.j2'
+
     return args
 
 
@@ -245,13 +251,8 @@ def extract_owner(args, epic):
 
 
 def extract_percent_complete(client, args, epic):
-    tmpl = (
-        'project = %s'
-        ' AND "Epic Link" = %s'
-    )
-    query = tmpl % (args.project, epic.key)
+    query = render(args.okr_query_template, args, {'epic_key': epic.key})
     issues = client.search_issues(query)
-
     total_points = sum([
         i.raw['fields'][args.story_point_field] or args.default_story_points
         for i in issues
