@@ -77,8 +77,7 @@ def parse_arguments():
     parser.add_argument('--project', help='JIRA project to report on.')
     parser.add_argument('--label',
                         help='Label name to use if your queries need one')
-    parser.add_argument('--since', help='Past date from which to pull data.',
-                        default=default_since)
+    parser.add_argument('--since', help='Past date from which to pull data.')
     parser.add_argument('--title', help='Title of the report.')
     parser.add_argument('--subtitle', help='Subtitle of the report.')
     parser.add_argument('--template', help='Path to a template for output.')
@@ -141,6 +140,8 @@ def parse_arguments():
         args.query_template = 'query.j2'
     if not args.okr_query_template:
         args.okr_query_template = 'okrquery.j2'
+    if not args.since:
+        args.since = default_since
 
     return args
 
