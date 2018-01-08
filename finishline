@@ -71,6 +71,8 @@ def parse_arguments():
     parser.add_argument('--server', help='server to your JIRA instance.')
     parser.add_argument('--cacert', help='CA cert for https validation.',
                         default='/etc/pki/tls/certs/ca-bundle.crt')
+    parser.add_argument('--basic-auth',
+                        help='use basic auth instead of Kerberos')
     parser.add_argument('--project', help='JIRA project to report on.')
     parser.add_argument('--since', help='Past date from which to pull data.',
                         default=default_since)
@@ -78,8 +80,7 @@ def parse_arguments():
     parser.add_argument('--subtitle', help='Subtitle of the report.')
     parser.add_argument('--template', help='Path to a template for output.')
     parser.add_argument('--query-template',
-                        help='Path to a template to generate a query.',
-                        default='query.j2')
+                        help='Path to a template to generate a query.')
     parser.add_argument(
         '-Q', '--query-context', action="append", default=[],
         help='Extra context to add when rendering the query template.')
@@ -131,6 +132,9 @@ def parse_arguments():
     for epic in args.include_epics:
         if epic in args.hide_epics:
             parser.error("%r may not be both hidden and included." % epic)
+    # Fall back to query.j2
+    if not args.query_template:
+        args.query_template = 'query.j2'
     return args
 
 
@@ -189,6 +193,8 @@ def pull_issues(client, args):
     query = render(args.query_template, args, query_context)
     print(query, file=sys.stderr)
     issues = client.search_issues(query, maxResults=999)
+    # NOTE: since this yields functionality won't occur until the first
+    # iteration over the return value
     for issue in issues:
         yield issue
 
@@ -338,12 +344,25 @@ if __name__ == '__main__':
 
     args = parse_arguments()
 
-    client = jira.client.JIRA(
-        server=args.server,
-        options=dict(verify=args.cacert),
-        kerberos=True,
-    )
+    # dynamically build the arguments to pass into jira.client.JIRA
+    client_kwargs = {
+        'server': args.server,
+        'options': dict(verify=args.cacert),
+    }
+    # If we have a basic_auth argument set...
+    if args.basic_auth:
+        import getpass
+        # ... use the value as the username
+        username = args.basic_auth
+        # and prompt for the password
+        passwd = getpass.getpass()
+        # Set both values in a tuple and use it when creating the client
+        client_kwargs['basic_auth'] = (username, passwd)
+    else:
+        # otherwise fall back to kerberos
+        client_kwargs['kerberos'] = True
 
+    client = jira.client.JIRA(**client_kwargs)
     issues = pull_issues(client, args)
     data = collate_issues(client, args, issues)
 
