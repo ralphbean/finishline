@@ -12,6 +12,7 @@ import argparse
 import collections
 import datetime
 import re
+import six
 import sys
 
 try:
@@ -365,6 +366,5 @@ if __name__ == '__main__':
     client = jira.client.JIRA(**client_kwargs)
     issues = pull_issues(client, args)
     data = collate_issues(client, args, issues)
-
     output = render(args.template, args, data)
-    print(output.encode('utf-8'))
+    print(six.u(output))
