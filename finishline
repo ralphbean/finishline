@@ -75,6 +75,8 @@ def parse_arguments():
     parser.add_argument('--basic-auth',
                         help='use basic auth instead of Kerberos')
     parser.add_argument('--project', help='JIRA project to report on.')
+    parser.add_argument('--label',
+                        help='Label name to use if your queries need one')
     parser.add_argument('--since', help='Past date from which to pull data.',
                         default=default_since)
     parser.add_argument('--title', help='Title of the report.')
