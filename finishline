@@ -278,6 +278,8 @@ def get_epic_details(client, args, key):
     epic.target_date = extract_target_date(args, epic)
     epic.owner = extract_owner(args, epic)
     epic.objective = extract_objective(args, epic)
+    epic.story_count = 0
+    epic.done_count = 0
 
     return epic
 
@@ -321,6 +323,10 @@ def collate_issues(client, args, issues):
         print("Found %r on %r, under %r" % (issue.key, epic_key, objective),
               file=sys.stderr)
         category = issue.fields.status.raw['statusCategory']['name']
+        epics[epic_key].story_count += 1
+        if category == 'Done':
+            epics[epic_key].done_count += 1
+        issue.fields.key = issue.key
         by_epic[epic_key][category].add(issue.fields)
 
     # Bubble up the KR completion to an average value for the objective.
