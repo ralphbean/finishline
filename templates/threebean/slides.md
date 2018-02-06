@@ -24,7 +24,7 @@
 **{{ category }}**:
 {% for issue in by_epic[key][category] %}
 * ([{{ issue.key }}]({{ server }}/browse/{{ issue.key }}))
-  {{ issue.raw['fields']['summary'].replace('[', '').replace(']', ':') }}{% endfor %}
+  {{ issue['summary'].replace('[', '').replace(']', ':') }}{% endfor %}
 {% endfor %}
 {% if epic.image_url %}![]({{epic.image_url}}){.background}{% endif %}
 ---{% endfor %}
