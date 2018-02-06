@@ -375,4 +375,6 @@ if __name__ == '__main__':
     issues = pull_issues(client, args)
     data = collate_issues(client, args, issues)
     output = render(args.template, args, data)
-    print(six.u(output))
+    if isinstance(output, six.text_type):
+        output = output.encode('utf-8')
+    print(output)
