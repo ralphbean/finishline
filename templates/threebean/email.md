@@ -27,7 +27,12 @@ https://docs.google.com/presentation/d/1nupBVPwzWeUP6n-vJh5YEhYoHjecCkzFXQvt9V0G
 {% endfor %}
 # Thank you
 
-For any questions, feel free to reach out to mikeb@redhat.com (Product Owner)
-and rbean@redhat.com (Team Lead), respond on list, or join to chat in #pnt-devops-dev.
+For any questions, feel free to reach out to:
+
+- mikeb@redhat.com (Product Owner)
+- acorvin@redhat.com (Project Manager)
+- rbean@redhat.com (Team Lead)
+
+.. or, you can respond on list, or join to chat in #pnt-devops-dev.
 
 Feedback on the format of this email is appreciated.  Too much detail?  Not enough?  Let us know.
