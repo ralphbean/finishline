@@ -11,6 +11,7 @@ from __future__ import print_function
 import argparse
 import collections
 import datetime
+import os
 import re
 import six
 import sys
@@ -74,6 +75,14 @@ def parse_arguments():
                         default='/etc/pki/tls/certs/ca-bundle.crt')
     parser.add_argument('--basic-auth',
                         help='use basic auth instead of Kerberos')
+    parser.add_argument(
+        '--service-account-password',
+        help=('WARNING: Passwords using this switch are visible on the '
+              'command line or in the config fileOptional password to '
+              'use with basic-auth. If left empty a prompt will be given. '
+              'This switch is meant for use with service or '
+              'non-sensitive accounts. Note: You can also use the environment'
+              ' variable FINISHLINE_SERVICE_ACCOUNT_PASSWORD.'))
     parser.add_argument('--project', help='JIRA project to report on.')
     parser.add_argument('--label',
                         help='Label name to use if your queries need one')
@@ -142,6 +151,13 @@ def parse_arguments():
         args.okr_query_template = 'okrquery.j2'
     if not args.since:
         args.since = default_since
+
+    # Allow for service account password from environment variable
+    env_passwd = os.getenv('FINISHLINE_SERVICE_ACCOUNT_PASSWORD')
+    if args.service_account_password is None and env_passwd is not None:
+         args.service_account_password = env_passwd
+    if args.service_account_password is not None:
+        print('WARNING: service account password in use', file=sys.stderr)
 
     return args
 
@@ -363,8 +379,13 @@ if __name__ == '__main__':
         import getpass
         # ... use the value as the username
         username = args.basic_auth
-        # and prompt for the password
-        passwd = getpass.getpass()
+        # and get the password
+        if args.service_account_password:
+            # user the service account password
+            passwd = args.service_account_password
+        else:
+            # prompt the user
+            passwd = getpass.getpass()
         # Set both values in a tuple and use it when creating the client
         client_kwargs['basic_auth'] = (username, passwd)
     else:
