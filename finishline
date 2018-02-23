@@ -377,4 +377,10 @@ if __name__ == '__main__':
     output = render(args.template, args, data)
     if isinstance(output, six.text_type):
         output = output.encode('utf-8')
+        try:
+            # Since we are supporting python 2 and 3 we need
+            # to force ascii encoding before printing for python 3
+            output = str(output, encoding='ascii')
+        except:
+            pass
     print(output)
