@@ -157,7 +157,7 @@ def parse_arguments():
     if args.service_account_password is None and env_passwd is not None:
          args.service_account_password = env_passwd
     if args.service_account_password is not None:
-        print('WARNING: service account password in use')
+        print('WARNING: service account password in use', file=sys.stderr)
 
     return args
 
