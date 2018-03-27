@@ -28,7 +28,8 @@ buildstatus: install
 		--subtitle "$(shell date '+%B %d, %Y') — PnT DevOps" \
 		--attribution \
 		--references threebean/references.md \
-		--template threebean/slides.md > foo.md # \
+		--template threebean/slides.md > foo.md \
+		--mosaic-config configs/mosaic_config.Factory # \
 		#--since "$(shell date -d '1 month ago' '+%Y-%m-%d')" \
 
 uploadstatus: buildstatus
@@ -70,5 +71,6 @@ buildemail: install
 		--subtitle "$(shell date '+%B %d, %Y') — PnT DevOps" \
 		--references threebean/references.md \
 		--attribution \
-		--template threebean/email.md > report-$(shell date '+%F').md #
+		--template threebean/email.md > report-$(shell date '+%F').md \
+		--mosaic-config configs/mosaic_config.Factory  # \
 		#--since "$(shell date -d '1 month ago' '+%Y-%m-%d')" \
