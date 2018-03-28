@@ -28,7 +28,8 @@ buildstatus: install
 		--subtitle "$(shell date '+%B %d, %Y') — PnT DevOps" \
 		--attribution \
 		--references threebean/references.md \
-		--template threebean/slides.md > foo.md # \
+		--template threebean/slides.md > foo.md \
+		--mosaic-config configs/mosaic_config.Factory # \
 		#--since "$(shell date -d '1 month ago' '+%Y-%m-%d')" \
 
 uploadstatus: buildstatus
@@ -65,10 +66,11 @@ buildemail: install
 		--server https://projects.engineering.redhat.com \
 		--project FACTORY \
 		--title "Factory 2.0, FY19Q1 Status" \
-		--hide-epics OSBS-920,PNTSYSOPS-2957,FACTORY-1991,FACTORY-1392,FACTORY-1335,FACTORY-1339,FACTORY-1677,FACTORY-1676,FACTORY-1340 \
+		--hide-epics OSBS-3854,OSBS-920,PNTSYSOPS-2957,FACTORY-1991,FACTORY-1392,FACTORY-1335,FACTORY-1339,FACTORY-1677,FACTORY-1676,FACTORY-1340,FACTORY-1946 \
 		--include-epics FACTORY-1408,FACTORY-1947,FACTORY-1950,FACTORY-1618,FACTORY-1983,FACTORY-1948,FACTORY-1886,FACTORY-1941,FACTORY-1940,FACTORY-1942,FACTORY-1944 \
 		--subtitle "$(shell date '+%B %d, %Y') — PnT DevOps" \
 		--references threebean/references.md \
 		--attribution \
-		--template threebean/email.md > report-$(shell date '+%F').md #
+		--template threebean/email.md > report-$(shell date '+%F').md \
+		--mosaic-config configs/mosaic_config.Factory  # \
 		#--since "$(shell date -d '1 month ago' '+%Y-%m-%d')" \

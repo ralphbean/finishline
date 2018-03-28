@@ -16,6 +16,8 @@ import re
 import six
 import sys
 
+from mosaic import mosaic
+
 try:
     import configparser
 except ImportError:
@@ -117,6 +119,8 @@ def parse_arguments():
                         default='Miscellaneous')
     parser.add_argument('--attribution', help='Show attribution for status.',
                         default=False, action='store_true')
+    parser.add_argument('--mosaic-config',
+                        help='Path to config file for mosaic options')
     args = parser.parse_args()
 
     # Manually check requirements so that we may use defaults from a file
@@ -301,6 +305,63 @@ def get_epic_details(client, args, key):
     return epic
 
 
+def _run_mosaic(args, start_date, end_date):
+    args['begin_date'] = start_date
+    args['end_date'] = end_date
+    return mosaic.run(args, client)
+
+def _calculate_mosaic_progress(baseline, current, target):
+    delta_begin_index = 0
+    if target[0] == '-':
+        operator = '-'
+        delta_begin_index = 1
+    else:
+        operator = '+'
+
+    if target[-1] == '%':
+        delta = '.' + target[delta_begin_index:-1]
+        delta = float(delta) * baseline
+    else:
+        delta = target[delta_begin_index:]
+    delta = float(delta)
+
+    if operator == '-':
+        status = (baseline - current) / delta
+    else:
+        status = (current - baseline) / delta
+
+    return '{0:0.1f}'.format(status * 100)
+
+
+def get_mosaic_status(epics, project, jira_client, mosaic_config):
+    mosaic_config = configparser.ConfigParser()
+    mosaic_config.read([args.mosaic_config])
+    mosaic_config = mosaic_config._sections
+    mosaic_issues = mosaic_config['mosaic'].get('mosaic_issues', '')
+    print(('Mosaic will be used to determine status for the following '
+          'issues: {issues}').format(issues=mosaic_issues), file=sys.stderr)
+    mosaic_args = {
+        'auto_mode': True,
+        'project': project,
+    }
+    baseline_start = mosaic_config['mosaic']['baseline_start']
+    baseline_end = mosaic_config['mosaic']['baseline_end']
+    current_start = mosaic_config['mosaic']['current_period_start']
+    current_end = mosaic_config['mosaic']['current_period_end']
+    for issue in mosaic_issues.split(','):
+        print(('Executing mosaic to get status for '
+               'issue {0}').format(issue), file=sys.stderr)
+        assert issue in mosaic_config
+        issue_config = mosaic_config[issue]
+        mosaic_args['query'] = [issue_config['query']]
+        mosaic_args['query_argument'] = issue_config.get('query_argument', '')
+        baseline = _run_mosaic(mosaic_args, baseline_start, baseline_end)
+        current = _run_mosaic(mosaic_args, current_start, current_end)
+        progress = _calculate_mosaic_progress(float(baseline), float(current),
+                                              issue_config['target'])
+        epics[issue].percent_complete = progress
+
+
 def collate_issues(client, args, issues):
     epics = {}
     objectives = collections.defaultdict(set)
@@ -395,6 +456,11 @@ if __name__ == '__main__':
     client = jira.client.JIRA(**client_kwargs)
     issues = pull_issues(client, args)
     data = collate_issues(client, args, issues)
+    if args.mosaic_config:
+        print(('Mosaic config argument specified. Automatically '
+               'calculating completion percentage for configured '
+               'issues.'), file=sys.stderr)
+        get_mosaic_status(data['epics'], args.project, client, args.mosaic_config)
     output = render(args.template, args, data)
     if isinstance(output, six.text_type):
         output = output.encode('utf-8')
