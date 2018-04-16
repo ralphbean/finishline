@@ -9,12 +9,15 @@ current_period_end=2018-05-31
 query=prioritycycletime
 query_argument=Critical
 target=-20%
+rolling=True
 
 [FACTORY-1942]
 query=cycletime
 target=-10%
+rolling=True
 
 [FACTORY-1944]
 query=statusduration
 query_argument=Internal Deployment
 target=-20%
+rolling=True

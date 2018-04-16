@@ -340,7 +340,7 @@ def get_mosaic_status(epics, project, jira_client, mosaic_config):
     mosaic_issues = mosaic_config['mosaic'].get('mosaic_issues', '')
     print(('Mosaic will be used to determine status for the following '
           'issues: {issues}').format(issues=mosaic_issues), file=sys.stderr)
-    mosaic_args = {
+    common_mosaic_args = {
         'auto_mode': True,
         'project': project,
     }
@@ -349,6 +349,8 @@ def get_mosaic_status(epics, project, jira_client, mosaic_config):
     current_start = mosaic_config['mosaic']['current_period_start']
     current_end = mosaic_config['mosaic']['current_period_end']
     for issue in mosaic_issues.split(','):
+        mosaic_args = {}
+        mosaic_args.update(common_mosaic_args)
         print(('Executing mosaic to get status for '
                'issue {0}').format(issue), file=sys.stderr)
         assert issue in mosaic_config
@@ -356,6 +358,11 @@ def get_mosaic_status(epics, project, jira_client, mosaic_config):
         mosaic_args['query'] = [issue_config['query']]
         mosaic_args['query_argument'] = issue_config.get('query_argument', '')
         baseline = _run_mosaic(mosaic_args, baseline_start, baseline_end)
+        # Only enable the rolling argument, if specified, for getting the
+        # current progress on an issue. The baseline date range should not
+        # include today, and the rolling argument is not supported for date
+        # ranges that don't include today.
+        mosaic_args['rolling'] = bool(issue_config.get('rolling', False))
         current = _run_mosaic(mosaic_args, current_start, current_end)
         progress = _calculate_mosaic_progress(float(baseline), float(current),
                                               issue_config['target'])
