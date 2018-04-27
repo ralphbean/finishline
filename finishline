@@ -358,6 +358,8 @@ def get_mosaic_status(epics, project, jira_client, mosaic_config):
     current_start = mosaic_config['mosaic']['current_period_start']
     current_end = mosaic_config['mosaic']['current_period_end']
     for issue in mosaic_issues.split(','):
+        if not issue or issue == '':
+            continue
         mosaic_args = {}
         mosaic_args.update(common_mosaic_args)
         print(('Executing mosaic to get status for '
