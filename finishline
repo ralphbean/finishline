@@ -187,7 +187,16 @@ def render(tpl, args, data):
 
     data['today'] = datetime.datetime.utcnow().strftime(date_format)
 
-    data.update(args._get_kwargs())
+    args_kwargs = args._get_kwargs()
+    for arg, value in args_kwargs:
+        try:
+            # Code path for Python2 strings.
+            # Explicitly convert the string to unicode
+            data[arg] = value.decode('utf-8')
+        except AttributeError:
+            # Either the attribute is not a string, or we're
+            # running Python 3 and the string is already unicode
+            data[arg] = value
 
     # If refernces exists in the namespace AND it results in a bool True
     if getattr(args, 'references', None) and args.references:
@@ -474,7 +483,7 @@ if __name__ == '__main__':
         try:
             # Since we are supporting python 2 and 3 we need
             # to force ascii encoding before printing for python 3
-            output = str(output, encoding='ascii')
+            output = str(output, encoding='utf-8')
         except:
             pass
     print(output)
