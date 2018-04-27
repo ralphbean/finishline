@@ -1,6 +1,6 @@
 # {{title}}
 {% if subtitle %}
-## {{subtitle.decode('utf-8')}}
+## {{subtitle}}
 {% endif %}
 ---
 # OKR Summary
