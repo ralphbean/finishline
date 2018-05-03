@@ -1,5 +1,5 @@
 {{title}}
-{% if subtitle %}{{subtitle.decode('utf-8')}}
+{% if subtitle %}{{subtitle}}
 {% endif %}
 Inbetween these email updates, you should be able to find our latest status at:
 https://docs.google.com/presentation/d/1nupBVPwzWeUP6n-vJh5YEhYoHjecCkzFXQvt9V0GG88/edit
