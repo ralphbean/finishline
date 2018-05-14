@@ -291,7 +291,9 @@ def extract_percent_complete(client, args, epic):
         if i.raw['fields']['resolution']
     ])
     if total_points:
-        return "%0.1f" % (closed_points / total_points * 100)
+        percent = float(float(closed_points) / float(total_points) * 100)
+        percent = '%0.1f' % percent
+        return percent
     else:
         return "nan"  # not a number
 
