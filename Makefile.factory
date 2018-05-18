@@ -8,11 +8,11 @@ buildsprint: install
 		--server https://projects.engineering.redhat.com \
 		--project FACTORY \
 		--title "Factory 2.0, Sprint ##" \
-		--subtitle "$(shell date '+%B %d, %Y') — PnT DevOps" \
+		--subtitle "$(shell LC_ALL='en_US.UTF-8' date '+%B %d, %Y') — PnT DevOps" \
 		--references threebean/references.md \
 		--attribution \
 		--template threebean/slides.md > foo.md # \
-		#--since "$(shell date -d '1 month ago' '+%Y-%m-%d')" \
+		#--since "$(shell LC_ALL='en_US.UTF-8' date -d '1 month ago' '+%Y-%m-%d')" \
 
 uploadsprint: buildsprint
 	./node_modules/md2gslides/bin/md2gslides.js foo.md \
@@ -25,12 +25,12 @@ buildstatus: install
 		--title "Factory 2.0, FY19Q1 Status" \
 		--hide-epics NOS-1291,OSBS-920,OSBS-3854,PNTSYSOPS-2957,FACTORY-1991,FACTORY-1392,FACTORY-1335,FACTORY-1339,FACTORY-1677,FACTORY-1676,FACTORY-1340,FACTORY-1946,FACTORY-1948,FACTORY-1886,FACTORY-2182 \
 		--include-epics FACTORY-1408,FACTORY-1947,FACTORY-1950,FACTORY-1618,FACTORY-1983,FACTORY-1941,FACTORY-1940,FACTORY-1942,FACTORY-1944 \
-		--subtitle "$(shell date '+%B %d, %Y') — PnT DevOps" \
+		--subtitle "$(shell LC_ALL='en_US.UTF-8' date '+%B %d, %Y') — PnT DevOps" \
 		--attribution \
 		--references threebean/references.md \
 		--template threebean/slides.md > foo.md \
 		--mosaic-config configs/mosaic_config.Factory # \
-		#--since "$(shell date -d '1 month ago' '+%Y-%m-%d')" \
+		#--since "$(shell LC_ALL='en_US.UTF-8' date -d '1 month ago' '+%Y-%m-%d')" \
 
 uploadstatus: buildstatus
 	./node_modules/md2gslides/bin/md2gslides.js foo.md \
@@ -56,7 +56,7 @@ confluence: install
 		--project FACTORY \
 		--title "Factory 2.0, OKRs" \
 		--hide-epics NOS-1291,OSBS-920,PNTSYSOPS-2957,FACTORY-1991,FACTORY-1392,FACTORY-1335,FACTORY-1339,FACTORY-1677,FACTORY-1676,FACTORY-1340 \
-		--since "$(shell date -d '1 month ago' '+%Y-%m-%d')" \
+		--since "$(shell LC_ALL='en_US.UTF-8' date -d '1 month ago' '+%Y-%m-%d')" \
 		--template threebean/confluence.something > confluence.something
 	echo " -- done -- "
 	cat confluence.something
@@ -69,9 +69,9 @@ buildemail: install
 		--title "Factory 2.0, FY19Q1 Status" \
 		--hide-epics NOS-1291,OSBS-3854,OSBS-920,PNTSYSOPS-2957,FACTORY-1991,FACTORY-1392,FACTORY-1335,FACTORY-1339,FACTORY-1677,FACTORY-1676,FACTORY-1340,FACTORY-1946,FACTORY-1948,FACTORY-1886,FACTORY-2182 \
 		--include-epics FACTORY-1408,FACTORY-1947,FACTORY-1950,FACTORY-1618,FACTORY-1983,FACTORY-1941,FACTORY-1940,FACTORY-1942,FACTORY-1944 \
-		--subtitle "$(shell date '+%B %d, %Y') — PnT DevOps" \
+		--subtitle "$(shell LC_ALL='en_US.UTF-8' date '+%B %d, %Y') — PnT DevOps" \
 		--references threebean/references.md \
 		--attribution \
-		--template threebean/email.md > report-$(shell date '+%F').md \
+		--template threebean/email.md > report-$(shell LC_ALL='en_US.UTF-8' date '+%F').md \
 		--mosaic-config configs/mosaic_config.Factory  # \
-		#--since "$(shell date -d '1 month ago' '+%Y-%m-%d')" \
+		#--since "$(shell LC_ALL='en_US.UTF-8' date -d '1 month ago' '+%Y-%m-%d')" \
