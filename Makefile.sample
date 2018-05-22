@@ -1,0 +1,27 @@
+install:
+	test -d ./node_modules/md2gslides/bin/ || npm install md2gslides
+	test -d venv || virtualenv venv
+	venv/bin/pip install -Ur requirements.txt
+
+buildstatus: install
+	venv/bin/python finishline \
+		--server https://projects.engineering.redhat.com \
+		--project $(YOURPROJECT) \
+		--title "Sample project status" \
+		--subtitle "$(shell date '+%B %d, %Y') — Sample Project" \
+		--attribution \
+		--template threebean/slides.md > foo.md
+
+uploadstatus: buildstatus
+	./node_modules/md2gslides/bin/md2gslides.js foo.md \
+		-t "Factory 2.0, FY19Q1 Status" \
+		-e -a $(SLIDES_ID)
+
+buildemail: install
+	venv/bin/python finishline \
+		--server https://projects.engineering.redhat.com \
+		--project $(YOURPROJECT) \
+		--title "Sample project status" \
+		--subtitle "$(shell date '+%B %d, %Y') — Sample Project" \
+		--attribution \
+		--template threebean/email.md > report-$(shell date '+%F').md
