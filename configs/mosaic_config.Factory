@@ -1,22 +1,22 @@
 [mosaic]
-mosaic_issues=FACTORY-1940,FACTORY-1942,FACTORY-1944
-baseline_start=2017-12-01
-baseline_end=2018-02-28
-current_period_start=2018-03-01
-current_period_end=2018-05-31
+mosaic_issues=FACTORY-2392,FACTORY-2393,FACTORY-2394
+baseline_start=2018-03-01
+baseline_end=2018-05-31
+current_period_start=2018-06-01
+current_period_end=2018-08-31
 
-[FACTORY-1940]
+[FACTORY-2392]
 query=prioritycycletime
 query_argument=Critical,Blocker
 target=-20%
 rolling=True
 
-[FACTORY-1942]
+[FACTORY-2393]
 query=cycletime
 target=-10%
 rolling=True
 
-[FACTORY-1944]
+[FACTORY-2394]
 query=statusduration
 query_argument=Internal Deployment
 target=-20%
