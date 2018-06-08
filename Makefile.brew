@@ -1,0 +1,61 @@
+install:
+	test -d ./node_modules/md2gslides/bin/ || npm install md2gslides
+	test -d venv || virtualenv venv
+	venv/bin/pip install -Ur requirements.txt
+
+buildstatus: install
+	venv/bin/python finishline --basic dgregor \
+		--server https://projects.engineering.redhat.com \
+		--project BREW \
+		--title "BREW, FY19Q2 Status" \
+		--hide-epics=FACTORY-1946 \
+		--include-epics=FACTORY-2190 \
+		--subtitle "$(shell LC_ALL='en_US.UTF-8' date '+%B %d, %Y') — PnT DevOps" \
+		--attribution \
+		--references threebean/references.md \
+		--template threebean/slides.md > foo.md \
+		--query-template query.brew.j2 \
+		--since "$(shell LC_ALL='en_US.UTF-8' date -d '1 month ago' '+%Y-%m-%d')" \
+
+uploadstatus: buildstatus
+	./node_modules/md2gslides/bin/md2gslides.js foo.md \
+		-t "Factory 2.0, FY19Q2 Status" \
+		-e -a 1nupBVPwzWeUP6n-vJh5YEhYoHjecCkzFXQvt9V0GG88
+
+okrs: install
+	venv/bin/python finishline \
+		--server https://projects.engineering.redhat.com \
+		--project FACTORY \
+		--title "Factory 2.0, OKRs" \
+		--hide-epics=FACTORY-1946,FACTORY-1941,FACTORY-1408,FACTORY-1947,FACTORY-1950,FACTORY-1983,FACTORY-1948,FACTORY-2305,FACTORY-1940,FACTORY-1942,FACTORY-1944,FACTORY-2391 \
+		--include-epics=FACTORY-2190,FACTORY-2388,FACTORY-1698,FACTORY-2362,FACTORY-2366,FACTORY-1991,FACTORY-2182,FACTORY-1886,FACTORY-2183,FACTORY-2389,FACTORY-2390,FACTORY-2392,FACTORY-2393,FACTORY-2394 \
+		--template threebean/okrs.csv > okrs.csv
+	echo " -- done -- "
+	cat okrs.csv
+	xclip -i okrs.csv -selection clipboard
+
+confluence: install
+	venv/bin/python finishline \
+		--server https://projects.engineering.redhat.com \
+		--project FACTORY \
+		--title "Factory 2.0, OKRs" \
+		--hide-epics=FACTORY-1946,FACTORY-1941,FACTORY-1408,FACTORY-1947,FACTORY-1950,FACTORY-1983,FACTORY-1948,FACTORY-2305,FACTORY-1940,FACTORY-1942,FACTORY-1944,FACTORY-2391 \
+		--include-epics=FACTORY-2190,FACTORY-2388,FACTORY-1698,FACTORY-2362,FACTORY-2366,FACTORY-1991,FACTORY-2182,FACTORY-1886,FACTORY-2183,FACTORY-2389,FACTORY-2390,FACTORY-2392,FACTORY-2393,FACTORY-2394 \
+		--since "$(shell LC_ALL='en_US.UTF-8' date -d '1 month ago' '+%Y-%m-%d')" \
+		--template threebean/confluence.something > confluence.something
+	echo " -- done -- "
+	cat confluence.something
+	xclip -i confluence.something -selection clipboard
+
+buildemail: install
+	venv/bin/python finishline \
+		--server https://projects.engineering.redhat.com \
+		--project FACTORY \
+		--title "Factory 2.0, FY19Q2 Status" \
+		--hide-epics=FACTORY-1946,FACTORY-1941,FACTORY-1408,FACTORY-1947,FACTORY-1950,FACTORY-1983,FACTORY-1948,FACTORY-2305,FACTORY-1940,FACTORY-1942,FACTORY-1944,FACTORY-2391 \
+		--include-epics=FACTORY-2190,FACTORY-2388,FACTORY-1698,FACTORY-2362,FACTORY-2366,FACTORY-1991,FACTORY-2182,FACTORY-1886,FACTORY-2183,FACTORY-2389,FACTORY-2390,FACTORY-2392,FACTORY-2393,FACTORY-2394 \
+		--subtitle "$(shell LC_ALL='en_US.UTF-8' date '+%B %d, %Y') — PnT DevOps" \
+		--references threebean/references.md \
+		--attribution \
+		--template threebean/email.md > report-$(shell LC_ALL='en_US.UTF-8' date '+%F').md \
+		#--since "$(shell LC_ALL='en_US.UTF-8' date -d '1 month ago' '+%Y-%m-%d')" \
