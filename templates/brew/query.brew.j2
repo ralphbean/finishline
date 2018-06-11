@@ -1,0 +1,16 @@
+project = {{ project }}
+AND (
+  resolution is EMPTY OR (
+    resolution is not EMPTY
+    AND resolutiondate >= {{ since }}
+  )
+)
+AND (
+  "Epic Link" in (BREW-2215, BREW-1924, BREW-2026, BREW-2094, BREW-2193, BREW-2216,
+  BREW-2217, BREW-2218, BREW-2219, BREW-2220, BREW-2221, BREW-2222, BREW-2223,
+  BREW-687)
+)
+AND status != Dropped
+AND statusCategory != "To Do"
+
+
