@@ -78,6 +78,9 @@ def parse_arguments():
                         default='/etc/pki/tls/certs/ca-bundle.crt')
     parser.add_argument('--basic-auth',
                         help='use basic auth instead of Kerberos')
+    parser.add_argument('--auth-path',
+                        help='additional (server) path to authenticate first',
+                        default=None)
     parser.add_argument(
         '--service-account-password',
         help=('WARNING: Passwords using this switch are visible on the '
@@ -482,9 +485,19 @@ if __name__ == '__main__':
             passwd = getpass.getpass()
         # Set both values in a tuple and use it when creating the client
         client_kwargs['basic_auth'] = (username, passwd)
+        # Validate credentials first
+        client_kwargs['validate'] = True
     else:
         # otherwise fall back to kerberos
-        client_kwargs['kerberos'] = True
+        if args.auth_path:
+            client_kwargs['options'].update(dict(auth_url=args.auth_path))
+            client_kwargs['validate'] = True
+        client_kwargs.update(
+            dict(
+                kerberos=True,
+                kerberos_options=dict(mutual_authentication='DISABLED'),
+            )
+        )
 
     client = jira.client.JIRA(**client_kwargs)
     issues = pull_issues(client, args)
