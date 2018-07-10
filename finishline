@@ -163,7 +163,7 @@ def parse_arguments():
     # Allow for service account password from environment variable
     env_passwd = os.getenv('FINISHLINE_SERVICE_ACCOUNT_PASSWORD')
     if args.service_account_password is None and env_passwd is not None:
-         args.service_account_password = env_passwd
+        args.service_account_password = env_passwd
     if args.service_account_password is not None:
         print('WARNING: service account password in use', file=sys.stderr)
 
@@ -332,6 +332,7 @@ def _run_mosaic(args, start_date, end_date):
         return mosaic.run(args, client)
     except ZeroDivisionError:
         return 'NAN: No data'
+
 
 def _calculate_mosaic_progress(baseline, current, target):
     if current == 'NAN: No data':
@@ -506,7 +507,8 @@ if __name__ == '__main__':
         print(('Mosaic config argument specified. Automatically '
                'calculating completion percentage for configured '
                'issues.'), file=sys.stderr)
-        get_mosaic_status(data['epics'], args.project, client, args.mosaic_config)
+        get_mosaic_status(data['epics'], args.project, client,
+                          args.mosaic_config)
     output = render(args.template, args, data)
     if isinstance(output, six.text_type):
         output = output.encode('utf-8')
@@ -514,6 +516,6 @@ if __name__ == '__main__':
             # Since we are supporting python 2 and 3 we need
             # to force ascii encoding before printing for python 3
             output = str(output, encoding='utf-8')
-        except:
+        except Exception:
             pass
     print(output)
