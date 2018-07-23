@@ -5,23 +5,13 @@ install:
 
 buildstatus: install
 	venv/bin/python finishline \
-		--server https://projects.engineering.redhat.com \
-		--project $(YOURPROJECT) \
-		--title "Sample project status" \
-		--subtitle "$(shell date '+%B %d, %Y') — Sample Project" \
-		--attribution \
-		--template threebean/slides.md > foo.md
+		--config ${YOUR_CONFIG_FILE} > foo.md
 
 uploadstatus: buildstatus
 	./node_modules/md2gslides/bin/md2gslides.js foo.md \
-		-t "Factory 2.0, FY19Q1 Status" \
+		-t "${YOUR_SLIDES_TITLE}" \
 		-e -a $(SLIDES_ID)
 
 buildemail: install
 	venv/bin/python finishline \
-		--server https://projects.engineering.redhat.com \
-		--project $(YOURPROJECT) \
-		--title "Sample project status" \
-		--subtitle "$(shell date '+%B %d, %Y') — Sample Project" \
-		--attribution \
-		--template threebean/email.md > report-$(shell date '+%F').md
+		--config ${YOUR_CONFIG_FILE} > report-$(shell date '+%F').md

@@ -11,6 +11,7 @@ from __future__ import print_function
 import argparse
 import collections
 import datetime
+import defaults
 import os
 import re
 import six
@@ -38,8 +39,6 @@ except ImportError as error:
     raise SystemExit(1)
 
 
-date_format = '%Y-%m-%d'
-
 custom_filters = {
     'slugify': lambda x: x.lower().replace(' ', '-'),
     'rst2html': lambda rst: docutils.examples.html_parts(
@@ -55,119 +54,24 @@ def scrape_links(session, args):
 
 
 def parse_arguments():
-    config_parser = argparse.ArgumentParser(add_help=False)
-    config_parser.add_argument("-c", "--config",
-                               help="Use config file instead of switches.")
+    arg_parser = argparse.ArgumentParser(add_help=False)
+    arg_parser.add_argument('-c', '--config', required=True,
+                            help='Path to the Finishline config file')
+    arg_parser.add_argument('-s', '--scenario',
+                            help=('A scenario to run in. This should '
+                                  'correspond to a block in the config '
+                                  'file. Options specified in the scenario '
+                                  'block will override the values specified '
+                                  'in the options section.'))
 
-    args, remaining_argv = config_parser.parse_known_args()
-    option_defaults = {}
+    return arg_parser.parse_args()
 
-    if args.config:
-        config_file = configparser.SafeConfigParser()
-        config_file.read([args.config])
-        option_defaults.update(dict(config_file.items("options")))
 
-    two_weeks = datetime.timedelta(days=14)
-    default_since = (datetime.date.today() - two_weeks).strftime(date_format)
+def get_config(config_file_path):
+    config = configparser.SafeConfigParser()
+    config.read(config_file_path)
 
-    parser = argparse.ArgumentParser(parents=[config_parser])
-    parser.set_defaults(**option_defaults)
-
-    parser.add_argument('--server', help='server to your JIRA instance.')
-    parser.add_argument('--cacert', help='CA cert for https validation.',
-                        default='/etc/pki/tls/certs/ca-bundle.crt')
-    parser.add_argument('--basic-auth',
-                        help='use basic auth instead of Kerberos')
-    parser.add_argument('--auth-path',
-                        help='additional (server) path to authenticate first',
-                        default=None)
-    parser.add_argument(
-        '--service-account-password',
-        help=('WARNING: Passwords using this switch are visible on the '
-              'command line or in the config fileOptional password to '
-              'use with basic-auth. If left empty a prompt will be given. '
-              'This switch is meant for use with service or '
-              'non-sensitive accounts. Note: You can also use the environment'
-              ' variable FINISHLINE_SERVICE_ACCOUNT_PASSWORD.'))
-    parser.add_argument('--project', help='JIRA project to report on.')
-    parser.add_argument('--label',
-                        help='Label name to use if your queries need one')
-    parser.add_argument('--since', help='Past date from which to pull data.')
-    parser.add_argument('--title', help='Title of the report.')
-    parser.add_argument('--subtitle', help='Subtitle of the report.')
-    parser.add_argument('--template', help='Path to a template for output.')
-    parser.add_argument('--query-template',
-                        help='Path to a template to generate a query.')
-    parser.add_argument('--okr-query-template',
-                        help='Path to an okr query template.')
-
-    parser.add_argument(
-        '-Q', '--query-context', action="append", default=[],
-        help='Extra context to add when rendering the query template.')
-    parser.add_argument('--references', help='Path to an extra template.')
-    parser.add_argument('--epic-field', help='Epic field key.',
-                        default='customfield_10006')
-    parser.add_argument('--hide-epics', help='Comma separated list of epics')
-    parser.add_argument('--include-epics',
-                        help='Comma separated list of epics')
-    parser.add_argument('--mvp-status-field', help='MVP status field key.',
-                        default='customfield_11908')
-    parser.add_argument('--story-point-field', help='Story point field key.',
-                        default='customfield_10002')
-    parser.add_argument('--default-story-points',
-                        help='Default points to assume if an issue has none.',
-                        type=float, default=3)
-    parser.add_argument('--placeholder-objective',
-                        help="Placeholder text for epics that don't "
-                        "have an objective associated.",
-                        default='Miscellaneous')
-    parser.add_argument('--attribution', help='Show attribution for status.',
-                        default=False, action='store_true')
-    parser.add_argument('--mosaic-config',
-                        help='Path to config file for mosaic options')
-    args = parser.parse_args()
-
-    # Manually check requirements so that we may use defaults from a file
-    required_options = []
-    if not args.server:
-        required_options.append('--server')
-    if not args.project:
-        required_options.append('--project')
-    if not args.title:
-        required_options.append('--title')
-    if not args.template:
-        required_options.append('--template')
-    if len(required_options) > 0:
-        parser.error(
-            'The following options are missing, but required: {}'.format(
-                ", ".join(required_options)))
-    if args.hide_epics:
-        args.hide_epics = args.hide_epics.split(',')
-    else:
-        args.hide_epics = []
-    if args.include_epics:
-        args.include_epics = args.include_epics.split(',')
-    else:
-        args.include_epics = []
-    for epic in args.include_epics:
-        if epic in args.hide_epics:
-            parser.error("%r may not be both hidden and included." % epic)
-    # Fall back to default templates
-    if not args.query_template:
-        args.query_template = 'query.j2'
-    if not args.okr_query_template:
-        args.okr_query_template = 'okrquery.j2'
-    if not args.since:
-        args.since = default_since
-
-    # Allow for service account password from environment variable
-    env_passwd = os.getenv('FINISHLINE_SERVICE_ACCOUNT_PASSWORD')
-    if args.service_account_password is None and env_passwd is not None:
-         args.service_account_password = env_passwd
-    if args.service_account_password is not None:
-        print('WARNING: service account password in use', file=sys.stderr)
-
-    return args
+    return config
 
 
 def render(tpl, args, data):
@@ -189,10 +93,9 @@ def render(tpl, args, data):
 
     data = data.copy()
 
-    data['today'] = datetime.datetime.utcnow().strftime(date_format)
+    data['today'] = datetime.datetime.utcnow().strftime(defaults.DATE_FORMAT)
 
-    args_kwargs = args._get_kwargs()
-    for arg, value in args_kwargs:
+    for arg, value in args.items():
         try:
             # Code path for Python2 strings.
             # Explicitly convert the string to unicode
@@ -203,8 +106,8 @@ def render(tpl, args, data):
             data[arg] = value
 
     # If refernces exists in the namespace AND it results in a bool True
-    if getattr(args, 'references', None) and args.references:
-        references = env.get_template(args.references)
+    if 'references' in args:
+        references = env.get_template(args['references'])
         data['references'] = references.render(**data)
 
     return template.render(**data)
@@ -229,9 +132,9 @@ def _split_context(context_data):
 
 def pull_issues(client, args):
     # Get any extra context items for the query
-    query_context = _split_context(args.query_context)
+    query_context = _split_context(args.get('query_context', ''))
     # Render the template with extra context into a query we can use
-    query = render(args.query_template, args, query_context)
+    query = render(args['query_template'], args, query_context)
     print(query, file=sys.stderr)
     issues = client.search_issues(query, maxResults=999)
     # NOTE: since this yields functionality won't occur until the first
@@ -268,7 +171,7 @@ def extract_objective(args, epic):
         for link in epic.raw['fields'].get('issuelinks', []):
             if link['type']['inward'] == 'is subtask of':
                 return link['inwardIssue']['fields']['summary']
-        return args.placeholder_objective
+        return args['placeholder_objective']
     except KeyError:
         msg = 'Error determining objective for epic {0}: {1}'
         print(msg.format(epic, traceback.format_exc()), file=sys.stderr)
@@ -276,7 +179,7 @@ def extract_objective(args, epic):
 
 
 def extract_mvp_status(args, epic):
-    return epic.raw['fields'].get(args.mvp_status_field)
+    return epic.raw['fields'].get(args['mvp_status_field'])
 
 
 def extract_target_date(args, epic):
@@ -288,14 +191,14 @@ def extract_owner(args, epic):
 
 
 def extract_percent_complete(client, args, epic):
-    query = render(args.okr_query_template, args, {'epic_key': epic.key})
+    query = render(args['okr_query_template'], args, {'epic_key': epic.key})
     issues = client.search_issues(query)
     total_points = sum([
-        i.raw['fields'][args.story_point_field] or args.default_story_points
+        i.raw['fields'][args['story_point_field']] or args['default_story_points']
         for i in issues
     ])
     closed_points = sum([
-        i.raw['fields'][args.story_point_field] or args.default_story_points
+        i.raw['fields'][args['story_point_field']] or args['default_story_points']
         for i in issues
         if i.raw['fields']['resolution']
     ])
@@ -333,6 +236,7 @@ def _run_mosaic(args, start_date, end_date):
     except ZeroDivisionError:
         return 'NAN: No data'
 
+
 def _calculate_mosaic_progress(baseline, current, target):
     if current == 'NAN: No data':
         return current
@@ -360,9 +264,9 @@ def _calculate_mosaic_progress(baseline, current, target):
     return '{0:0.1f}'.format(status * 100)
 
 
-def get_mosaic_status(epics, project, jira_client, mosaic_config):
+def get_mosaic_status(epics, project, jira_client, mosaic_config_file):
     mosaic_config = configparser.ConfigParser()
-    mosaic_config.read([args.mosaic_config])
+    mosaic_config.read(mosaic_config_file)
     mosaic_config = mosaic_config._sections
     mosaic_issues = mosaic_config['mosaic'].get('mosaic_issues', '')
     print(('Mosaic will be used to determine status for the following '
@@ -405,31 +309,31 @@ def collate_issues(client, args, issues):
 
     # First, handle any explicitly listed epics, even if they have no curent
     # work in the `issues` list.
-    for epic_key in args.include_epics:
+    for epic_key in args['include_epics']:
         if epic_key not in epics:
             epics[epic_key] = get_epic_details(client, args, epic_key)
 
-        placeholder = args.placeholder_objective
+        placeholder = args['placeholder_objective']
         objective = getattr(epics[epic_key], 'objective', placeholder)
         objectives[objective].add(epic_key)
 
     # Second, do our main work of processing the individual issues passed in.
     for issue in issues:
-        epic_key = issue.raw['fields'][args.epic_field]
+        epic_key = issue.raw['fields'][args['epic_field']]
 
         # Ignore orphan tasks, unassociated with an epic.
         if not epic_key:
             continue
 
         # If this is on a verboten epic, ditch it.
-        if epic_key in args.hide_epics:
+        if epic_key in args['hide_epics']:
             continue
 
         # Enrich with details
         if epic_key not in epics:
             epics[epic_key] = get_epic_details(client, args, epic_key)
 
-        placeholder = args.placeholder_objective
+        placeholder = args['placeholder_objective']
         objective = getattr(epics[epic_key], 'objective', placeholder)
         objectives[objective].add(epic_key)
 
@@ -465,21 +369,26 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
 
     args = parse_arguments()
+    config = get_config(args.config)._sections
+    if 'scenario' in args and args.scenario is not None:
+        config = defaults.override_scenario(config, args.scenario)
+    config = defaults.set_defaults(config)
+    config_options = config['options']
 
     # dynamically build the arguments to pass into jira.client.JIRA
     client_kwargs = {
-        'server': args.server,
-        'options': dict(verify=args.cacert),
+        'server': config_options['server'],
+        'options': dict(verify=config_options['cacert']),
     }
     # If we have a basic_auth argument set...
-    if args.basic_auth:
+    if 'basic_auth' in config_options and config_options['basic_auth']:
         import getpass
         # ... use the value as the username
-        username = args.basic_auth
+        username = config_options['basic_auth']
         # and get the password
-        if args.service_account_password:
+        if config_options['service_account_password']:
             # user the service account password
-            passwd = args.service_account_password
+            passwd = config_options['service_account_password']
         else:
             # prompt the user
             passwd = getpass.getpass()
@@ -489,8 +398,8 @@ if __name__ == '__main__':
         client_kwargs['validate'] = True
     else:
         # otherwise fall back to kerberos
-        if args.auth_path:
-            client_kwargs['options'].update(dict(auth_url=args.auth_path))
+        if 'auth_path' in config_options:
+            client_kwargs['options'].update(dict(auth_url=config_options['auth_path']))
             client_kwargs['validate'] = True
         client_kwargs.update(
             dict(
@@ -500,20 +409,21 @@ if __name__ == '__main__':
         )
 
     client = jira.client.JIRA(**client_kwargs)
-    issues = pull_issues(client, args)
-    data = collate_issues(client, args, issues)
-    if args.mosaic_config:
+    issues = pull_issues(client, config_options)
+    data = collate_issues(client, config_options, issues)
+    if 'mosaic_config' in config_options:
         print(('Mosaic config argument specified. Automatically '
                'calculating completion percentage for configured '
                'issues.'), file=sys.stderr)
-        get_mosaic_status(data['epics'], args.project, client, args.mosaic_config)
-    output = render(args.template, args, data)
+        get_mosaic_status(data['epics'], config_options['project'], client,
+                          config_options['mosaic_config'])
+    output = render(config_options['template'], config_options, data)
     if isinstance(output, six.text_type):
         output = output.encode('utf-8')
         try:
             # Since we are supporting python 2 and 3 we need
             # to force ascii encoding before printing for python 3
             output = str(output, encoding='utf-8')
-        except:
+        except Exception:
             pass
     print(output)
