@@ -4,16 +4,9 @@ install:
 	venv/bin/pip install -Ur requirements.txt
 
 buildstatus: install
-	venv/bin/python finishline --basic dgregor \
-		--server https://projects.engineering.redhat.com \
-		--project BREW \
-		--title "BREW, FY19Q2 Status" \
-		--subtitle "$(shell LC_ALL='en_US.UTF-8' date '+%B %d, %Y') — PnT DevOps" \
-		--attribution \
-		--references brew/references.md \
-		--template brew/slides.md > foo.md \
-		--query-template brew/query.brew.j2 \
-		--since "$(shell LC_ALL='en_US.UTF-8' date -d '1 month ago' '+%Y-%m-%d')" \
+	venv/bin/python finishline \
+		--scenario statusslides \
+		--config brew.conf > foo.md
 
 uploadstatus: buildstatus
 	./node_modules/md2gslides/bin/md2gslides.js foo.md \
@@ -22,34 +15,21 @@ uploadstatus: buildstatus
 
 okrs: install
 	venv/bin/python finishline \
-		--server https://projects.engineering.redhat.com \
-		--project BREW \
-		--title "Brew, OKRs" \
-		--query-template brew/query.brew.j2 \
-		--template brew/okrs.csv > okrs.csv
+		--scenario okrs \
+		--config brew.conf > okrs.csv
 	echo " -- done -- "
 	cat okrs.csv
 	xclip -i okrs.csv -selection clipboard
 
 confluence: install
 	venv/bin/python finishline \
-		--server https://projects.engineering.redhat.com \
-		--project BREW \
-		--title "Brew, OKRs" \
-		--since "$(shell LC_ALL='en_US.UTF-8' date -d '1 month ago' '+%Y-%m-%d')" \
-		--query-template brew/query.brew.j2 \
-		--template brew/confluence.something > confluence.something
+		--scenario confluence \
+		--config brew.conf > confluence.something
 	echo " -- done -- "
 	cat confluence.something
 	xclip -i confluence.something -selection clipboard
 
 buildemail: install
 	venv/bin/python finishline \
-		--server https://projects.engineering.redhat.com \
-		--project BREW \
-		--title "Brew, FY19Q2 Status" \
-		--subtitle "$(shell LC_ALL='en_US.UTF-8' date '+%B %d, %Y') — PnT DevOps" \
-		--references brew/references.md \
-		--attribution \
-		--query-template brew/query.brew.j2 \
-		--template brew/email.md > report-$(shell LC_ALL='en_US.UTF-8' date '+%F').md
+		--scenario email \
+		--config brew.conf > report-$(shell LC_ALL='en_US.UTF-8' date '+%F').md
