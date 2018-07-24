@@ -381,12 +381,12 @@ if __name__ == '__main__':
         'options': dict(verify=config_options['cacert']),
     }
     # If we have a basic_auth argument set...
-    if 'basic_auth' in config_options and config_options['basic_auth']:
+    if 'use_basic_auth' in config_options and config_options['use_basic_auth']:
         import getpass
         # ... use the value as the username
-        username = config_options['basic_auth']
+        username = config_options['basic_auth_username']
         # and get the password
-        if config_options['service_account_password']:
+        if 'service_account_password' in config_options:
             # user the service account password
             passwd = config_options['service_account_password']
         else:
