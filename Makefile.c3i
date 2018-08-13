@@ -1,0 +1,14 @@
+install:
+	test -d ./node_modules/md2gslides/bin/ || npm install md2gslides
+	test -d venv || virtualenv venv
+	venv/bin/pip install -Ur requirements.txt
+
+buildstatus: install
+	venv/bin/python finishline \
+		--scenario statusslides \
+		--config c3i.conf > foo.md
+
+uploadstatus: buildstatus
+	./node_modules/md2gslides/bin/md2gslides.js foo.md \
+		-t "C3I Status" \
+		-e -a 1sxvqkxvcXhQkoAzsY_Pe-FNHPBIMC9RqPlV0ODc5zD0
