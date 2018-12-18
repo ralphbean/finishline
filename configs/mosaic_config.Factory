@@ -1,18 +1,19 @@
 [mosaic]
-mosaic_issues=FACTORY-2935,FACTORY-2936
-baseline_start=2018-06-01
-baseline_end=2018-08-31
-current_period_start=2018-09-01
-current_period_end=2018-11-30
+# No issues need status update from mosaic in FY19Q4
+# mosaic_issues=FACTORY-2935,FACTORY-2936
+# baseline_start=2018-06-01
+# baseline_end=2018-08-31
+# current_period_start=2018-09-01
+# current_period_end=2018-11-30
 
-[FACTORY-2935]
-query=statusduration
-query_argument=Internal Deployment
-target=-10%
-rolling=True
+# [FACTORY-2935]
+# query=statusduration
+# query_argument=Internal Deployment
+# target=-10%
+# rolling=True
 
-[FACTORY-2936]
-query=statusduration
-query_argument=In Review
-target=-10%
-rolling=True
+# [FACTORY-2936]
+# query=statusduration
+# query_argument=In Review
+# target=-10%
+# rolling=True
