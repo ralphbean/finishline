@@ -29,9 +29,8 @@ https://docs.google.com/presentation/d/1nupBVPwzWeUP6n-vJh5YEhYoHjecCkzFXQvt9V0G
 
 For any questions, feel free to reach out to:
 
-- mikeb@redhat.com (Product Owner)
-- acorvin@redhat.com (Project Manager)
-- rbean@redhat.com (Team Lead)
+- Mike Bonnet <mikeb@redhat.com> (Product Owner)
+- Lui Carvalho <lui@redhat.com> (Team Lead)
 
 .. or, you can respond on list, or join to chat in #pnt-devops-dev.
 
