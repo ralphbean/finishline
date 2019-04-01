@@ -10,7 +10,7 @@ buildstatus: install
 
 uploadstatus: buildstatus
 	./node_modules/md2gslides/bin/md2gslides.js foo.md \
-		-t "Factory 2.0, FY19Q4 Status" \
+		-t "Factory 2.0, FY20Q1 Status" \
 		-e -a 1nupBVPwzWeUP6n-vJh5YEhYoHjecCkzFXQvt9V0GG88
 
 okrs: install
